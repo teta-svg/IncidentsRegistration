@@ -1,12 +1,52 @@
 ﻿<Window x:Class="IncidentsRegistration.Views.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:IncidentsRegistration.Views"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        
+        Title="Информационная система МВД: Регистрация инцидентов"
+        Height="750" Width="1200"
+        MinHeight="600" MinWidth="900"
+        WindowStartupLocation="CenterScreen">
+
+    <Grid Background="{StaticResource SecondaryBlue}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" Background="White" BorderBrush="#CCC" BorderThickness="0,0,0,1">
+            <Menu VerticalAlignment="Center" FontSize="14" Padding="10">
+
+                <MenuItem Header="Домой" />
+
+                <MenuItem Header="Инциденты">
+                    <MenuItem Header="Все инциденты" Click="NavigateIncidents_Click"/>
+                    <MenuItem Header="Создать инцидент"/>
+                    <MenuItem Header="Архив"/>
+                </MenuItem>
+
+                <MenuItem Header="Группы выезда">
+                    <MenuItem Header="Список групп"/>
+                    <MenuItem Header="Назначение"/>
+                    <MenuItem Header="Статус групп"/>
+                </MenuItem>
+
+                <MenuItem Header="Локации">
+                    <MenuItem Header="Все локации"/>
+                    <MenuItem Header="Добавить локацию"/>
+                </MenuItem>
+
+                <MenuItem Header="Отчеты">
+                    <MenuItem Header="По инцидентам"/>
+                    <MenuItem Header="По группам"/>
+                    <MenuItem Header="Экспорт"/>
+                </MenuItem>
+
+            </Menu>
+        </Border>
+
+        <Grid Grid.Row="1">
+            <Frame x:Name="MainFrame"
+                   NavigationUIVisibility="Hidden"
+                   Navigated="MainFrame_Navigated"/>
+        </Grid>
     </Grid>
 </Window>
