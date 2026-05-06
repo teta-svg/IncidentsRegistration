@@ -51,5 +51,19 @@ namespace IncidentsRegistration.Services
                 .ToList();
         }
 
+        public Incident GetFullIncidentDetails(int incidentId)
+        {
+            return _context.Incidents
+                .Include(i => i.IdResponseTeamNavigation)
+                .Include(i => i.IncidentLocations)
+                    .ThenInclude(il => il.IdLocationNavigation)
+                .Include(i => i.SubjectRoles)
+                    .ThenInclude(sr => sr.IdSubjectNavigation)
+                .Include(i => i.Decision)
+                    .ThenInclude(d => d.CriminalCase)
+                .Include(i => i.Decision)
+                    .ThenInclude(d => d.TerritorialTransfer)
+                .FirstOrDefault(i => i.IdIncident == incidentId);
+        }
     }
 }

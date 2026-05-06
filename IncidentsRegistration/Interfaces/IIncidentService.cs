@@ -8,5 +8,6 @@ namespace IncidentsRegistration.Interfaces
         List<Incident> GetAll();
         Incident? GetById(int id);
         List<Incident> GetActiveIncidentsByTeam(int responseTeamId);
+        Incident GetFullIncidentDetails(int incidentId);
     }
 }

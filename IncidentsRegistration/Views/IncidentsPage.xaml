@@ -20,49 +20,56 @@
                        Margin="20,0"/>
         </StackPanel>
 
-        <GroupBox Header="Текущие инциденты" Grid.Row="1" Padding="5">
-            <DataGrid ItemsSource="{Binding Incidents}"
-                      SelectedItem="{Binding SelectedIncident}"
-                      AutoGenerateColumns="False" 
-                      CanUserAddRows="False"
-                      IsReadOnly="True"
-                      SelectionMode="Single"
-                      BorderThickness="1"
-                      BorderBrush="#DDD">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="ID" Binding="{Binding IdIncident}" Width="Auto"/>
-                    <DataGridTextColumn Header="Группа" Binding="{Binding IdResponseTeamNavigation.NameTeam}" Width="Auto"/>
-                    <DataGridTextColumn Header="Тип происшествия" Binding="{Binding TypeOfIncident}" Width="*"/>
-                    <DataGridTextColumn Header="Время" Binding="{Binding RegistrationTime, StringFormat=\{0:HH:mm\}}" Width="Auto"/>
-                    <DataGridTextColumn Header="Дата" Binding="{Binding RegistrationDate, StringFormat=\{0:dd.MM.yyyy\}}" Width="Auto"/>
-                    <DataGridTextColumn Header="Статус решения" Binding="{Binding Decision.DecisionType}" Width="1.5*"/>
-                </DataGrid.Columns>
-            </DataGrid>
-        </GroupBox>
+        <Border Grid.Row="1" BorderBrush="Black" BorderThickness="2" Padding="10">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
 
-        <GroupBox Header="Управление инцидентами" Grid.Row="2" Margin="0,20,0,0" Padding="15">
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <TextBlock Text="Текущие инциденты" FontWeight="Bold" Margin="0,0,0,10"/>
 
-                <Button Content="ПОДРОБНЕЕ" 
-                        Command="{Binding DetailsCommand}"
-                        Width="120" Height="35" Margin="5,0"/>
+                <DataGrid Grid.Row="1" 
+                          ItemsSource="{Binding Incidents}"
+                          SelectedItem="{Binding SelectedIncident}"
+                          AutoGenerateColumns="False" 
+                          CanUserAddRows="False"
+                          IsReadOnly="True"
+                          SelectionMode="Single"
+                          VerticalAlignment="Top" 
+                          BorderBrush="Black" 
+                          BorderThickness="1" 
+                          Background="White"
+                          GridLinesVisibility="All"
+                          HorizontalGridLinesBrush="Black"
+                          VerticalGridLinesBrush="Black">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="ID" Binding="{Binding IdIncident}" Width="Auto"/>
+                        <DataGridTextColumn Header="Группа" Binding="{Binding IdResponseTeamNavigation.NameTeam}" Width="Auto"/>
+                        <DataGridTextColumn Header="Тип происшествия" Binding="{Binding TypeOfIncident}" Width="*"/>
+                        <DataGridTextColumn Header="Время" Binding="{Binding RegistrationTime, StringFormat=\{0:HH:mm\}}" Width="Auto"/>
+                        <DataGridTextColumn Header="Дата" Binding="{Binding RegistrationDate, StringFormat=\{0:dd.MM.yyyy\}}" Width="Auto"/>
+                        <DataGridTextColumn Header="Статус решения" Binding="{Binding Decision.DecisionType}" Width="1.5*"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </Border>
+        <Border Grid.Row="2" BorderBrush="Black" BorderThickness="2" Margin="0,20,0,0" Padding="15">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
 
-                <Button Content="ДОБАВИТЬ" 
-                        Command="{Binding AddCommand}"
-                        Background="#E1F5FE"
-                        Width="120" Height="35" Margin="5,0"/>
+                <TextBlock Text="Управление инцидентами" FontWeight="Bold" Margin="0,0,0,10"/>
 
-                <Button Content="ОБНОВИТЬ" 
-                        Command="{Binding RefreshCommand}"
-                        Width="120" Height="35" Margin="5,0"/>
-
-                <Button Content="УДАЛИТЬ" 
-                        Command="{Binding DeleteCommand}"
-                        Background="#FFEBEE"
-                        Foreground="Red"
-                        Width="120" Height="35" Margin="5,0"/>
-
-            </StackPanel>
-        </GroupBox>
+                <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Content="ПОДРОБНЕЕ" Command="{Binding DetailsCommand}" Background="{StaticResource SecondaryBlue}" Width="120" Height="35" Margin="5,0"/>
+                    <Button Content="ДОБАВИТЬ" Command="{Binding AddCommand}" Background="{StaticResource PrimaryGreen}" Width="120" Height="35" Margin="5,0"/>
+                    <Button Content="ОБНОВИТЬ" Command="{Binding RefreshCommand}" Background="{StaticResource SecondaryYellow}" Width="120" Height="35" Margin="5,0"/>
+                    <Button Content="УДАЛИТЬ" Command="{Binding DeleteCommand}" Background="{StaticResource PrimaryPink}" Width="120" Height="35" Margin="5,0"/>
+                </StackPanel>
+            </Grid>
+        </Border>
     </Grid>
 </Page>

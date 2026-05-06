@@ -20,37 +20,53 @@
                        Margin="20,0"/>
         </StackPanel>
 
-        <GroupBox Header="Список активных инцидентов" Grid.Row="1" Padding="5">
-            <DataGrid ItemsSource="{Binding ActiveIncidents}"
-                      SelectedItem="{Binding SelectedIncident}"
-                      AutoGenerateColumns="False" 
-                      CanUserAddRows="False"
-                      IsReadOnly="True"
-                      SelectionMode="Single">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="ID" Binding="{Binding IdIncident}" Width="Auto"/>
-                    <DataGridTextColumn Header="Группа" Binding="{Binding IdResponseTeamNavigation.NameTeam}" Width="Auto"/>
-                    <DataGridTextColumn Header="Тип происшествия" Binding="{Binding TypeOfIncident}" Width="*"/>
-                    <DataGridTextColumn Header="Время" Binding="{Binding RegistrationTime, StringFormat=\{0:HH:mm\}}" Width="Auto"/>
-                    <DataGridTextColumn Header="Дата" Binding="{Binding RegistrationDate, StringFormat=\{0:dd.MM.yyyy\}}" Width="Auto"/>
-                </DataGrid.Columns>
-            </DataGrid>
-        </GroupBox>
+        <Border Grid.Row="1" BorderBrush="Black" BorderThickness="2" CornerRadius="2" Padding="10">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
 
-        <GroupBox Header="Действия" Grid.Row="2" Margin="0,20,0,0" Padding="15">
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <TextBlock Text="Список активных инцидентов" FontWeight="Bold" Margin="0,0,0,10"/>
 
-                <Button Content="ПОДРОБНЕЕ" 
-                        Command="{Binding DetailsCommand}"
-                        Width="150" Height="40" Margin="5,0"/>
+                <DataGrid Grid.Row="1" 
+                  ItemsSource="{Binding ActiveIncidents}"
+                  SelectedItem="{Binding SelectedIncident}"
+                  AutoGenerateColumns="False" 
+                  CanUserAddRows="False"
+                  IsReadOnly="True"
+                  VerticalAlignment="Top" 
+                  BorderBrush="Black" 
+                  BorderThickness="1" 
+                  Background="White"
+                  GridLinesVisibility="All"
+                  HorizontalGridLinesBrush="Black"
+                  VerticalGridLinesBrush="Black">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="ID" Binding="{Binding IdIncident}" Width="Auto"/>
+                        <DataGridTextColumn Header="Группа" Binding="{Binding IdResponseTeamNavigation.NameTeam}" Width="Auto"/>
+                        <DataGridTextColumn Header="Тип происшествия" Binding="{Binding TypeOfIncident}" Width="*"/>
+                        <DataGridTextColumn Header="Время" Binding="{Binding RegistrationTime, StringFormat=\{0:HH:mm\}}" Width="Auto"/>
+                        <DataGridTextColumn Header="Дата" Binding="{Binding RegistrationDate, StringFormat=\{0:dd.MM.yyyy\}}" Width="Auto"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </Border>
 
-                <Button Content="ВЫНЕСТИ РЕШЕНИЕ" 
-                        Command="{Binding AddDecisionCommand}"
-                        Background="#DCEDC8"
-                        FontWeight="Bold"
-                        Width="180" Height="40" Margin="5,0"/>
+        <Border Grid.Row="2" BorderBrush="Black" BorderThickness="2" Margin="0,20,0,0" Padding="15">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
 
-            </StackPanel>
-        </GroupBox>
+                <TextBlock Text="Действия" FontWeight="Bold" Margin="0,0,0,10"/>
+
+                <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Content="ПОДРОБНЕЕ" Width="150" Height="40" Margin="5,0" Background="{StaticResource PrimaryGreen}"/>
+                    <Button Content="ВЫНЕСТИ РЕШЕНИЕ" Background="{StaticResource SecondaryYellow}" FontWeight="Bold" Width="180" Height="40" Margin="5,0"/>
+                </StackPanel>
+            </Grid>
+        </Border>
     </Grid>
 </Page>
