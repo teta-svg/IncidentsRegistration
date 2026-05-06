@@ -7,5 +7,6 @@ namespace IncidentsRegistration.Interfaces
         void CreateIncident(Incident incident);
         List<Incident> GetAll();
         Incident? GetById(int id);
+        List<Incident> GetActiveIncidentsByTeam(int responseTeamId);
     }
 }

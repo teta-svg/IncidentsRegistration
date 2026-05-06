@@ -1,0 +1,54 @@
+﻿<Page x:Class="IncidentsRegistration.Views.MainAppPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Title="MainAppPage">
+
+    <Page.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+    </Page.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0"
+                Background="White"
+                BorderBrush="#CCC"
+                BorderThickness="0,0,0,1">
+
+            <Menu FontSize="16" Padding="10">
+
+                <MenuItem Header="Все инциденты"
+              Visibility="{Binding CanSeeAllIncidents, Converter={StaticResource BoolToVis}}"
+              Click="Incidents_Click"/>
+
+                <MenuItem Header="Активные инциденты"
+              Visibility="{Binding CanSeeOperational, Converter={StaticResource BoolToVis}}"
+              Click="ActiveIncidents_Click"/>
+
+                <MenuItem Header="Участники"
+              Visibility="{Binding CanSeeOperational, Converter={StaticResource BoolToVis}}"
+              Click="Subjects_Click"/>
+
+                <MenuItem Header="Отчеты"
+              Visibility="{Binding CanSeeOperational, Converter={StaticResource BoolToVis}}"
+              Click="Reports_Click"/>
+
+                <MenuItem Header="Группы реагирования"
+              Visibility="{Binding IsAdmin, Converter={StaticResource BoolToVis}}"
+              Click="Teams_Click"/>
+
+                <MenuItem Header="Пользователи"
+              Visibility="{Binding IsAdmin, Converter={StaticResource BoolToVis}}"
+              Click="Users_Click"/>
+            </Menu>
+        </Border>
+
+        <Frame x:Name="MainFrame"
+               Grid.Row="1"
+               NavigationUIVisibility="Hidden"/>
+
+    </Grid>
+</Page>

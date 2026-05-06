@@ -42,5 +42,14 @@ namespace IncidentsRegistration.Services
                     .ThenInclude(il => il.IdLocationNavigation)
                 .Include(i => i.SubjectRoles);
         }
+
+        public List<Incident> GetActiveIncidentsByTeam(int responseTeamId)
+        {
+            return BaseQuery()
+                .Where(i => i.Decision == null)
+                .Where(i => i.IdResponseTeam == responseTeamId)
+                .ToList();
+        }
+
     }
 }

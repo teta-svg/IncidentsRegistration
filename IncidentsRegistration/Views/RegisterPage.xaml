@@ -1,0 +1,48 @@
+﻿<Page  x:Class="IncidentsRegistration.Views.RegisterPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Title="Регистрация"
+      Background="{StaticResource SecondaryBlue}">
+    <Grid>
+        <Border Background="{StaticResource SecondaryYellow}" 
+                CornerRadius="15" 
+                Padding="30" 
+                Width="320" 
+                VerticalAlignment="Center">
+
+            <StackPanel>
+                <TextBlock Text="РЕГИСТРАЦИЯ" 
+                           FontSize="20" 
+                           FontWeight="Bold" 
+                           Foreground="#555" 
+                           HorizontalAlignment="Center" 
+                           Margin="0,0,0,25"/>
+
+                <TextBlock Text="Логин" Margin="5,0,0,0"/>
+                <TextBox Text="{Binding Login}"/>
+
+                <TextBlock Text="Пароль" Margin="5,0,0,0"/>
+                <PasswordBox x:Name="PasswordBox"/>
+
+                <TextBlock Text="Подтвердите пароль" Margin="5,0,0,0"/>
+                <PasswordBox x:Name="ConfirmPasswordBox"/>
+
+                <Button Content="ЗАРЕГИСТРИРОВАТЬСЯ"
+                        Background="{StaticResource PrimaryGreen}"
+                        Foreground="White"
+                        FontWeight="Bold"
+                        Margin="0,30,0,15"
+                        Height="40"
+                        Click="Register_Click"/>
+
+                <Button Content="Назад"
+                        Background="{StaticResource PrimaryGreen}"
+                        Foreground="White"
+                        FontWeight="Bold"
+                        Margin="0,2,0,15"
+                        Height="40"
+                        Click="Back_Click"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Page>

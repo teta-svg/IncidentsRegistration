@@ -11,42 +11,9 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-
-        <Border Grid.Row="0" Background="White" BorderBrush="#CCC" BorderThickness="0,0,0,1">
-            <Menu VerticalAlignment="Center" FontSize="14" Padding="10">
-
-                <MenuItem Header="Домой" />
-
-                <MenuItem Header="Инциденты">
-                    <MenuItem Header="Все инциденты" Click="NavigateIncidents_Click"/>
-                    <MenuItem Header="Создать инцидент"/>
-                    <MenuItem Header="Архив"/>
-                </MenuItem>
-
-                <MenuItem Header="Группы выезда">
-                    <MenuItem Header="Список групп"/>
-                    <MenuItem Header="Назначение"/>
-                    <MenuItem Header="Статус групп"/>
-                </MenuItem>
-
-                <MenuItem Header="Локации">
-                    <MenuItem Header="Все локации"/>
-                    <MenuItem Header="Добавить локацию"/>
-                </MenuItem>
-
-                <MenuItem Header="Отчеты">
-                    <MenuItem Header="По инцидентам"/>
-                    <MenuItem Header="По группам"/>
-                    <MenuItem Header="Экспорт"/>
-                </MenuItem>
-
-            </Menu>
-        </Border>
-
-        <Grid Grid.Row="1">
+        <Grid>
             <Frame x:Name="MainFrame"
-                   NavigationUIVisibility="Hidden"
-                   Navigated="MainFrame_Navigated"/>
+           NavigationUIVisibility="Hidden"/>
         </Grid>
     </Grid>
 </Window>
