@@ -9,6 +9,7 @@ namespace IncidentsRegistration.Views
     public partial class MainAppPage : Page
     {
         private readonly MainAppViewModel _vm;
+
         public MainAppPage(MainAppViewModel vm)
         {
             InitializeComponent();
@@ -17,7 +18,9 @@ namespace IncidentsRegistration.Views
 
             Loaded += (s, e) =>
             {
-                if (_vm.Role == "Team")
+                string currentRole = _vm.Role?.ToLower().Trim();
+
+                if (currentRole == "руководитель группы")
                 {
                     OpenActiveIncidents();
                 }
@@ -28,41 +31,27 @@ namespace IncidentsRegistration.Views
             };
         }
 
-        private void ActiveIncidents_Click(object sender, RoutedEventArgs e) => OpenActiveIncidents();
+        private T GetService<T>() where T : class
+            => ((App)Application.Current).Services.GetService<T>();
 
         private void OpenActiveIncidents()
         {
-            var services = ((App)Application.Current).Services;
-            var incidentService = services.GetService<IIncidentService>();
-
+            var incidentService = GetService<IIncidentService>();
             var activeVm = new ActiveIncidentsViewModel(incidentService, _vm.CurrentUser);
             MainFrame.Navigate(new ActiveIncidentsPage(activeVm));
         }
 
         private void OpenAllIncidents()
         {
-            var services = ((App)Application.Current).Services;
-            var incidentsVm = services.GetService<IncidentsViewModel>();
+            var incidentsVm = GetService<IncidentsViewModel>();
             if (incidentsVm != null)
                 MainFrame.Navigate(new IncidentsPage(incidentsVm));
         }
 
+        private void Incidents_Click(object sender, RoutedEventArgs e) => OpenAllIncidents();
 
-        private void Incidents_Click(object sender, RoutedEventArgs e)
-        {
-            var services = ((App)Application.Current).Services;
+        private void ActiveIncidents_Click(object sender, RoutedEventArgs e) => OpenActiveIncidents();
 
-            var incidentsVm = services.GetService<IncidentsViewModel>();
-
-            if (incidentsVm != null)
-            {
-                MainFrame.Navigate(new IncidentsPage(incidentsVm));
-            }
-            else
-            {
-                MessageBox.Show("Ошибка");
-            }
-        }
         private void Subjects_Click(object sender, RoutedEventArgs e)
         {
             // MainFrame.Navigate(new SubjectsPage());

@@ -26,21 +26,29 @@ namespace IncidentsRegistration.ViewModels
         [RelayCommand]
         private void LoginUser()
         {
-            if (string.IsNullOrWhiteSpace(Login))
+            if (string.IsNullOrWhiteSpace(Login) || string.IsNullOrWhiteSpace(Password))
             {
-                MessageBox.Show("Введите логин");
+                MessageBox.Show("Введите логин и пароль");
                 return;
             }
 
-            var user = _authService.Login(Login, Password);
-
-            if (user == null)
+            try
             {
-                MessageBox.Show("Неверный логин или пароль");
-                return;
-            }
+                var user = _authService.Login(Login, Password);
 
-            OnLoginSuccess?.Invoke(user);
+                if (user == null)
+                {
+                    MessageBox.Show("Неверный логин или пароль");
+                    return;
+                }
+
+                OnLoginSuccess?.Invoke(user);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при авторизации: {ex.Message}");
+            }
         }
     }
+
 }

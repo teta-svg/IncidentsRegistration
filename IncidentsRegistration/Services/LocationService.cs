@@ -1,6 +1,7 @@
 ﻿using IncidentsRegistration.Data;
 using IncidentsRegistration.Interfaces;
 using IncidentsRegistration.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace IncidentsRegistration.Services
 {
@@ -13,53 +14,22 @@ namespace IncidentsRegistration.Services
             _context = context;
         }
 
-        public void AddLocationToIncident(int incidentId, Location location)
+        public Location GetOrCreateLocation(Location location)
         {
-            if (location == null)
-                throw new ArgumentNullException(nameof(location));
+            var existing = _context.Locations
+                .AsNoTracking()
+                .FirstOrDefault(l =>
+                    l.Settlement == location.Settlement &&
+                    l.Street == location.Street &&
+                    l.House == location.House &&
+                    l.Room == location.Room);
 
-            var incident = _context.Incidents.Find(incidentId);
+            if (existing != null) return existing;
 
-            if (incident == null)
-                throw new ArgumentNullException(nameof(incident));
-
-            var incidentLocation = new IncidentLocation
-            {
-                IdIncident = incidentId,
-                IdLocationNavigation = location,
-            };
-
-            _context.IncidentLocations.Add(incidentLocation);
+            _context.Locations.Add(location);
             _context.SaveChanges();
-
+            return location;
         }
-
-        public void AttachToIncident(int incidentId, int locationId)
-        {
-            var incident = _context.Incidents.Find(incidentId);
-            var location = _context.Locations.Find(locationId);
-
-            if (incident == null)
-                throw new ArgumentNullException(nameof(incident));
-
-            if (location == null)
-                throw new ArgumentNullException(nameof(location));
-
-            var exists = _context.IncidentLocations
-                .Any(il => il.IdIncident == incidentId && il.IdLocation == locationId);
-
-            if (exists)
-                throw new ArgumentException("Связь уже существует");
-
-            var incidentLocation = new IncidentLocation
-            {
-                IdIncident = incidentId,
-                IdLocation = locationId
-            };
-
-            _context.IncidentLocations.Add(incidentLocation);
-            _context.SaveChanges();
-        }
-
     }
+
 }

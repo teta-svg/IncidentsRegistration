@@ -125,6 +125,23 @@ public partial class IncidentsDbContext : DbContext
         modelBuilder.Entity<SystemUser>(entity =>
         {
             entity.HasKey(e => e.IdUser).HasName("PK__System_u__D7B4671E4C6E890C");
+
+            entity.ToTable("System_user");
+
+            entity.HasIndex(e => e.LoginName, "UQ__System_u__F6D56B57317E21CF").IsUnique();
+
+            entity.Property(e => e.IdUser).HasColumnName("ID_user");
+            entity.Property(e => e.LoginName)
+                .HasMaxLength(50)
+                .HasColumnName("login_name");
+            entity.Property(e => e.UserPassword)
+                .HasMaxLength(100)
+                .HasColumnName("user_password");
+            entity.Property(e => e.UserRole)
+                .HasMaxLength(20)
+                .IsUnicode(false)
+                .HasDefaultValue("диспетчер")
+                .HasColumnName("User_Role");
         });
 
         modelBuilder.Entity<SystemUserResponseTeam>(entity =>

@@ -34,11 +34,13 @@ namespace IncidentsRegistration
             services.AddTransient<RegisterViewModel>();
             services.AddTransient<IncidentsViewModel>();
             services.AddTransient<MainAppViewModel>();
+            services.AddTransient<AddIncidentViewModel>();
 
             services.AddTransient<LoginPage>();
             services.AddTransient<RegisterPage>();
             services.AddTransient<MainAppPage>();
             services.AddTransient<IncidentsPage>();
+            services.AddTransient<AddIncidentPage>();
 
             return services.BuildServiceProvider();
         }

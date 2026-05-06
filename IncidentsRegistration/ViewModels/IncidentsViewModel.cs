@@ -3,83 +3,86 @@ using CommunityToolkit.Mvvm.Input;
 using IncidentsRegistration.Interfaces;
 using IncidentsRegistration.Models;
 using System.Collections.ObjectModel;
-using System.Windows.Data;
+using System.Windows;
 
 namespace IncidentsRegistration.ViewModels
 {
     public partial class IncidentsViewModel : ObservableObject
     {
-        private readonly ILocationService _locationService;
-        private readonly IResponseTeamService _responseTeamService;
         private readonly IIncidentService _incidentService;
+        private readonly ILocationService _locationService;
+        private readonly IResponseTeamService _teamService;
 
         public ObservableCollection<Incident> Incidents { get; } = new();
-        public ObservableCollection<Location> Locations { get; } = new();
-        public ObservableCollection<ResponseTeam> FreeResponseTeams { get; } = new();
 
-
-        [ObservableProperty]
-        private Incident selectedIncident;
+        public Action<Incident>? OnShowDetailsRequested;
+        public Action? OnAddRequested;
+        public Action<Incident>? OnUpdateRequested;
 
         [ObservableProperty]
-        private Location selectedLocation;
-
-        [ObservableProperty]
-        private ResponseTeam selectedResponseTeam;
+        private Incident? selectedIncident;
 
         public IncidentsViewModel(
+            IIncidentService incidentService,
             ILocationService locationService,
-            IResponseTeamService responseTeamService,
-            IIncidentService incidentService)
+            IResponseTeamService teamService)
         {
-            _locationService = locationService;
-            _responseTeamService = responseTeamService;
             _incidentService = incidentService;
+            _locationService = locationService;
+            _teamService = teamService;
         }
 
         [RelayCommand]
-        private void LoadData()
+        public void LoadData()
         {
             Incidents.Clear();
-
-            foreach (var incident in _incidentService.GetAll())
+            var data = _incidentService.GetAll();
+            foreach (var incident in data)
+            {
                 Incidents.Add(incident);
-
-            FreeResponseTeams.Clear();
-
-            foreach (var team in _responseTeamService.GetFreeTeams())
-                FreeResponseTeams.Add(team);
-
+            }
         }
 
         [RelayCommand]
-        private void AssignTeam()
+        private void Details()
         {
-            if (SelectedIncident == null || SelectedResponseTeam == null)
-                return;
-
-            _responseTeamService.AssignTeam(
-                SelectedIncident.IdIncident, 
-                SelectedResponseTeam.IdResponseTeam);
-
-            SelectedResponseTeam = null;
-            SelectedIncident = null;
-
-            LoadData();
-
-            CollectionViewSource.GetDefaultView(Incidents).Refresh();
+            if (SelectedIncident != null)
+            {
+                OnShowDetailsRequested?.Invoke(SelectedIncident);
+            }
+            else
+            {
+                MessageBox.Show("Выберите инцидент из списка для просмотра деталей.");
+            }
         }
 
         [RelayCommand]
-        private void AddLocation()
+        private void Add()
         {
-            if (SelectedIncident == null || SelectedLocation == null)
-                return;
-            _locationService.AttachToIncident(
-                SelectedIncident.IdIncident, 
-                SelectedLocation.IdLocation);
+            OnAddRequested?.Invoke();
+        }
 
-            LoadData();
+        [RelayCommand]
+        private void Refresh() => LoadData();
+
+        [RelayCommand]
+        private void Delete()
+        {
+            if (SelectedIncident == null) return;
+            MessageBox.Show("Функция удаления в разработке или требует прав админа.");
+        }
+
+        [RelayCommand]
+        private void Update()
+        {
+            if (SelectedIncident != null)
+            {
+                OnUpdateRequested?.Invoke(SelectedIncident);
+            }
+            else
+            {
+                MessageBox.Show("Выберите инцидент для редактирования");
+            }
         }
     }
 }

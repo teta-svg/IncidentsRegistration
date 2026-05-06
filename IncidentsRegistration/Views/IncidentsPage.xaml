@@ -66,7 +66,7 @@
                 <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
                     <Button Content="ПОДРОБНЕЕ" Command="{Binding DetailsCommand}" Background="{StaticResource SecondaryBlue}" Width="120" Height="35" Margin="5,0"/>
                     <Button Content="ДОБАВИТЬ" Command="{Binding AddCommand}" Background="{StaticResource PrimaryGreen}" Width="120" Height="35" Margin="5,0"/>
-                    <Button Content="ОБНОВИТЬ" Command="{Binding RefreshCommand}" Background="{StaticResource SecondaryYellow}" Width="120" Height="35" Margin="5,0"/>
+                    <Button Content="ОБНОВИТЬ"  Command="{Binding UpdateCommand}"  Background="{StaticResource SecondaryYellow}" Width="120" Height="35" Margin="5,0"/>
                     <Button Content="УДАЛИТЬ" Command="{Binding DeleteCommand}" Background="{StaticResource PrimaryPink}" Width="120" Height="35" Margin="5,0"/>
                 </StackPanel>
             </Grid>

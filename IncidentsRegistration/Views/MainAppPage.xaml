@@ -25,7 +25,7 @@
               Click="Incidents_Click"/>
 
                 <MenuItem Header="Активные инциденты"
-              Visibility="{Binding CanSeeOperational, Converter={StaticResource BoolToVis}}"
+              Visibility="{Binding IsLead, Converter={StaticResource BoolToVis}}"
               Click="ActiveIncidents_Click"/>
 
                 <MenuItem Header="Участники"

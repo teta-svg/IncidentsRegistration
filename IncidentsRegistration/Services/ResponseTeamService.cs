@@ -17,13 +17,11 @@ namespace IncidentsRegistration.Services
         public List<ResponseTeam> GetFreeTeams()
         {
             return _context.ResponseTeams
-                .AsNoTracking()
                 .Include(rt => rt.Incidents)
-                    .ThenInclude(i => i.Decision)
-                .Where(rt => !rt.Incidents.Any(i => i.Decision == null))
+                .Where(rt => rt.Incidents.All(i =>
+                _context.Decisions.Any(d => d.IdIncident == i.IdIncident)))
                 .ToList();
         }
-
 
         public void AssignTeam(int incidentId, int teamId)
         {
@@ -49,13 +47,11 @@ namespace IncidentsRegistration.Services
             _context.SaveChanges();
 
         }
-        public List<ResponseTeam> GetTeamsWithTasks()
+
+        public List<ResponseTeam> GetAllTeams()
         {
             return _context.ResponseTeams
                 .AsNoTracking()
-                .Include(rt => rt.Incidents)
-                    .ThenInclude(i => i.Decision)
-                .Where(rt => rt.Incidents.Any(i => i.Decision == null))
                 .ToList();
         }
 

@@ -6,6 +6,6 @@ namespace IncidentsRegistration.Interfaces
     {
         List<ResponseTeam> GetFreeTeams();
         void AssignTeam(int incidentId, int teamId);
-        List<ResponseTeam> GetTeamsWithTasks();
+        List<ResponseTeam> GetAllTeams();
     }
 }

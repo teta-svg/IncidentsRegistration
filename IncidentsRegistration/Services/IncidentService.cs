@@ -14,21 +14,20 @@ namespace IncidentsRegistration.Services
             _context = context;
         }
 
-        public void CreateIncident(Incident incident)
+        public void CreateIncident(Incident incident, int locationId)
         {
-            if (incident == null)
-                throw new ArgumentNullException(nameof(incident));
+            _context.ChangeTracker.Clear();
 
-            if (string.IsNullOrWhiteSpace(incident.TypeOfIncident))
-                throw new ArgumentException("Укажите тип инцидента");
-
-            incident.RegistrationDate = DateOnly.FromDateTime(DateTime.Now);
-            incident.RegistrationTime = TimeOnly.FromDateTime(DateTime.Now);
+            incident.IncidentLocations.Add(new IncidentLocation
+            {
+                IdLocation = locationId
+            });
 
             _context.Incidents.Add(incident);
-
             _context.SaveChanges();
         }
+
+
         public List<Incident> GetAll() => BaseQuery().ToList();
         public Incident? GetById(int id) => BaseQuery().FirstOrDefault(i=>i.IdIncident == id);
 
@@ -51,7 +50,7 @@ namespace IncidentsRegistration.Services
                 .ToList();
         }
 
-        public Incident GetFullIncidentDetails(int incidentId)
+        public Incident? GetFullIncidentDetails(int incidentId)
         {
             return _context.Incidents
                 .Include(i => i.IdResponseTeamNavigation)
@@ -64,6 +63,14 @@ namespace IncidentsRegistration.Services
                 .Include(i => i.Decision)
                     .ThenInclude(d => d.TerritorialTransfer)
                 .FirstOrDefault(i => i.IdIncident == incidentId);
+        }
+
+        public void UpdateIncident(Incident incident, Location location)
+        {
+            _context.ChangeTracker.Clear();
+            _context.Incidents.Update(incident);
+            _context.Locations.Update(location);
+            _context.SaveChanges();
         }
     }
 }
