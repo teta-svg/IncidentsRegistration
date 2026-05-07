@@ -3,85 +3,161 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:IncidentsRegistration.Views"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
-      Title="Регистрация инцидента">
+      Background="#F0F2F5" Title="Регистрация инцидента">
+
+    <Page.Resources>
+        <Style TargetType="TextBox">
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Background" Value="#F8F9FA"/>
+            <Setter Property="BorderBrush" Value="#E9ECEF"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="1" CornerRadius="8">
+                            <ScrollViewer x:Name="PART_ContentHost"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="TextBlock" x:Key="LabelStyle">
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#8B959E"/>
+            <Setter Property="Margin" Value="0,10,0,5"/>
+        </Style>
+    </Page.Resources>
 
     <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <Grid Margin="20">
+        <Grid Margin="30">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <TextBlock Text="НОВАЯ КАРТОЧКА ИНЦИДЕНТА" FontSize="22" FontWeight="Bold" Margin="0,0,0,20"/>
+            <StackPanel Grid.Row="0" Margin="0,0,0,25">
+                <TextBlock Text="ФОРМИРОВАНИЕ" FontSize="11" FontWeight="Bold" Foreground="#8B959E"/>
+                <TextBlock Text="Новая карточка инцидента" FontSize="28" FontWeight="SemiBold" Foreground="#2D3436"/>
+            </StackPanel>
 
             <StackPanel Grid.Row="1">
-                <Border BorderBrush="Black" BorderThickness="2" Margin="0,0,0,10" Padding="15" Background="White">
-                    <StackPanel>
-                        <TextBlock Text="ВЫБОР СВОБОДНОЙ ГРУППЫ" FontWeight="Bold" Foreground="Gray" Margin="0,0,0,10"/>
-                        <ComboBox ItemsSource="{Binding FreeTeams}" 
-                                  SelectedItem="{Binding SelectedTeam}" 
-                                  DisplayMemberPath="NameTeam" Height="30"/>
-                    </StackPanel>
-                </Border>
-                <Border BorderBrush="Black" BorderThickness="2" Margin="0,0,0,10" Padding="15" Background="White">
-                    <StackPanel>
-                        <TextBlock Text="ДАННЫЕ ПРОИСШЕСТВИЯ" FontWeight="Bold" Foreground="Gray" Margin="0,0,0,10"/>
-                        <TextBlock Text="Тип:"/>
-                        <TextBox Text="{Binding NewIncident.TypeOfIncident}" Margin="0,5" Height="25"/>
-                        <UniformGrid Columns="2">
-                            <StackPanel Margin="0,0,5,0">
-                                <TextBlock Text="Дата:"/>
-                                <DatePicker SelectedDate="{Binding DisplayDate}"/>
-                            </StackPanel>
-                            <StackPanel Margin="5,0,0,0">
-                                <TextBlock Text="Время:"/>
-                                <TextBox Text="{Binding DisplayTime, StringFormat=\{0:HH:mm\}}" Height="25"/>
-                            </StackPanel>
-                        </UniformGrid>
-                    </StackPanel>
-                </Border>
+                <UniformGrid Columns="2">
+                    <Border Background="White" CornerRadius="20" Margin="0,0,10,20" Padding="20">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="20" ShadowDepth="4" Opacity="0.06"/>
+                        </Border.Effect>
+                        <StackPanel>
+                            <Border Background="{StaticResource PrimaryGreen}" CornerRadius="10" Padding="12,5" HorizontalAlignment="Left" Margin="0,0,0,15">
+                                <TextBlock Text="ВЫБОР СВОБОДНОЙ ГРУППЫ" Foreground="#2D4A3E" FontWeight="Bold" FontSize="10"/>
+                            </Border>
+                            <ComboBox ItemsSource="{Binding FreeTeams}" 
+                                      SelectedItem="{Binding SelectedTeam}" 
+                                      DisplayMemberPath="NameTeam" Height="40">
+                                <ComboBox.Resources>
+                                    <Style TargetType="Border">
+                                        <Setter Property="CornerRadius" Value="8"/>
+                                    </Style>
+                                </ComboBox.Resources>
+                            </ComboBox>
+                        </StackPanel>
+                    </Border>
 
-                <Border BorderBrush="Black" BorderThickness="2" Margin="0,0,0,10" Padding="15" Background="White">
-                    <StackPanel>
-                        <TextBlock Text="АДРЕС" FontWeight="Bold" Foreground="Gray" Margin="0,0,0,10"/>
-                        <TextBlock Text="Регион (Область/Край):"/>
-                        <TextBox Text="{Binding NewLocation.Region}" Margin="0,5"/>
-                        <TextBlock Text="Город/Поселок:"/>
-                        <TextBox Text="{Binding NewLocation.Settlement}" Margin="0,5"/>
-                        <TextBlock Text="Улица:"/>
-                        <TextBox Text="{Binding NewLocation.Street}" Margin="0,5"/>
-                        <UniformGrid Columns="2">
-                            <StackPanel Margin="0,0,5,0">
-                                <TextBlock Text="Дом:"/>
-                                <TextBox Text="{Binding NewLocation.House}"/>
-                            </StackPanel>
-                            <StackPanel Margin="5,0,0,0">
-                                <TextBlock Text="Кв/Оф:"/>
-                                <TextBox Text="{Binding NewLocation.Room}"/>
-                            </StackPanel>
-                        </UniformGrid>
-                        <UniformGrid Columns="2" Margin="0,10,0,0">
-                            <StackPanel Margin="0,0,5,0">
-                                <TextBlock Text="Координата X:"/>
-                                <TextBox Text="{Binding NewLocation.CoordinateX}" Height="25"/>
-                            </StackPanel>
-                            <StackPanel Margin="5,0,0,0">
-                                <TextBlock Text="Координата Y:"/>
-                                <TextBox Text="{Binding NewLocation.CoordinateY}" Height="25"/>
-                            </StackPanel>
-                        </UniformGrid>
+                    <Border Background="White" CornerRadius="20" Margin="10,0,0,20" Padding="20">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="20" ShadowDepth="4" Opacity="0.06"/>
+                        </Border.Effect>
+                        <StackPanel>
+                            <Border Background="{StaticResource SecondaryBlue}" CornerRadius="10" Padding="12,5" HorizontalAlignment="Left" Margin="0,0,0,15">
+                                <TextBlock Text="ВРЕМЯ РЕГИСТРАЦИИ" Foreground="#4A90E2" FontWeight="Bold" FontSize="10"/>
+                            </Border>
+                            <UniformGrid Columns="2">
+                                <StackPanel Margin="0,0,10,0">
+                                    <TextBlock Text="Дата" Style="{StaticResource LabelStyle}"/>
+                                    <DatePicker SelectedDate="{Binding DisplayDate}" Height="35"/>
+                                </StackPanel>
+                                <StackPanel>
+                                    <TextBlock Text="Время" Style="{StaticResource LabelStyle}"/>
+                                    <TextBox Text="{Binding DisplayTime, StringFormat=\{0:HH:mm\}}" Height="35"/>
+                                </StackPanel>
+                            </UniformGrid>
+                        </StackPanel>
+                    </Border>
+                </UniformGrid>
+                <Border Background="White" CornerRadius="20" Padding="25" Margin="0,0,0,20">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="25" ShadowDepth="5" Opacity="0.05"/>
+                    </Border.Effect>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="20"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
 
-                    </StackPanel>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="ДАННЫЕ ПРОИСШЕСТВИЯ" FontWeight="Bold" FontSize="14" Foreground="#2D3436" Margin="0,0,0,10"/>
+
+                            <TextBlock Text="Тип инцидента" Style="{StaticResource LabelStyle}"/>
+                            <TextBox Text="{Binding NewIncident.TypeOfIncident}" Height="40" Background="#F1F3F5"/>
+
+                            <TextBlock Text="Регион / Область" Style="{StaticResource LabelStyle}"/>
+                            <TextBox Text="{Binding NewLocation.Region}" Height="40"/>
+
+                            <TextBlock Text="Город / Населенный пункт" Style="{StaticResource LabelStyle}"/>
+                            <TextBox Text="{Binding NewLocation.Settlement}" Height="40"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="ЛОКАЦИЯ" FontWeight="Bold" FontSize="14" Foreground="#2D3436" Margin="0,0,0,10"/>
+
+                            <TextBlock Text="Улица" Style="{StaticResource LabelStyle}"/>
+                            <TextBox Text="{Binding NewLocation.Street}" Height="40"/>
+
+                            <UniformGrid Columns="2" Margin="0,5,0,0">
+                                <StackPanel Margin="0,0,10,0">
+                                    <TextBlock Text="Дом" Style="{StaticResource LabelStyle}"/>
+                                    <TextBox Text="{Binding NewLocation.House}" Height="40"/>
+                                </StackPanel>
+                                <StackPanel>
+                                    <TextBlock Text="Кв/Оф" Style="{StaticResource LabelStyle}"/>
+                                    <TextBox Text="{Binding NewLocation.Room}" Height="40"/>
+                                </StackPanel>
+                            </UniformGrid>
+
+                            <UniformGrid Columns="2" Margin="0,5,0,0">
+                                <StackPanel Margin="0,0,10,0">
+                                    <TextBlock Text="Координата X" Style="{StaticResource LabelStyle}"/>
+                                    <TextBox Text="{Binding NewLocation.CoordinateX}" Height="40"/>
+                                </StackPanel>
+                                <StackPanel>
+                                    <TextBlock Text="Координата Y" Style="{StaticResource LabelStyle}"/>
+                                    <TextBox Text="{Binding NewLocation.CoordinateY}" Height="40"/>
+                                </StackPanel>
+                            </UniformGrid>
+                        </StackPanel>
+                    </Grid>
                 </Border>
             </StackPanel>
 
-            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,10">
-                <Button Content="ОТМЕНА" Click="Cancel_Click" Width="150" Height="40" Background="#CCC" Margin="0,0,10,0"/>
-                <Button Content="СОХРАНИТЬ" Click="Save_Click" Width="200" Height="40" Background="#27ae60" Foreground="White" FontWeight="Bold"/>
+            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+                <Button Content="ОТМЕНИТЬ" Click="Cancel_Click" Width="140" Height="45" Margin="0,0,15,0" Background="Transparent" Foreground="#8B959E" FontWeight="SemiBold" BorderThickness="0"/>
+
+                <Button Content="СОХРАНИТЬ КАРТОЧКУ" Click="Save_Click" Width="220" Height="45" Background="#27ae60" Foreground="White" FontWeight="Bold">
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="12"/>
+                        </Style>
+                    </Button.Resources>
+                    <Button.Effect>
+                        <DropShadowEffect BlurRadius="15" ShadowDepth="3" Opacity="0.2" Color="#27ae60"/>
+                    </Button.Effect>
+                </Button>
             </StackPanel>
         </Grid>
     </ScrollViewer>

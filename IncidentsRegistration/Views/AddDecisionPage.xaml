@@ -3,65 +3,130 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:IncidentsRegistration.Views"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
-      Title="AddDecisionPage">
+      Background="#F0F2F5" Title="Вынесение решения">
 
-    <Grid>
-        <StackPanel Margin="20">
-            <TextBlock Text="ВЫНЕСЕНИЕ РЕШЕНИЯ" FontSize="20" FontWeight="Bold" Margin="0,0,0,20"/>
+    <Page.Resources>
+        <Style TargetType="TextBlock" x:Key="LabelStyle">
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#8B959E"/>
+            <Setter Property="Margin" Value="0,10,0,5"/>
+        </Style>
 
-            <Border BorderBrush="Black" BorderThickness="1" Padding="15" Background="White">
-                <StackPanel>
-                    <TextBlock Text="Тип решения:"/>
-                    <ComboBox ItemsSource="{Binding DecisionTypes}" 
-                      SelectedItem="{Binding SelectedType}" Margin="0,5,0,15"/>
+        <Style TargetType="TextBox">
+            <Setter Property="Padding" Value="10,8"/>
+            <Setter Property="Background" Value="#F8F9FA"/>
+            <Setter Property="BorderBrush" Value="#E9ECEF"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="1" CornerRadius="8">
+                            <ScrollViewer x:Name="PART_ContentHost"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Page.Resources>
 
-                    <TextBlock Text="Правовое основание:"/>
-                    <TextBox Text="{Binding NewDecision.LegalBasis}" Margin="0,5,0,15"/>
+    <Grid Margin="30">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
 
-                    <TextBlock Text="Дата принятия решения:"/>
-                    <DatePicker SelectedDate="{Binding UI_DecisionDate}"/>
-
-                </StackPanel>
-            </Border>
-            <Border BorderBrush="DarkRed" 
-        BorderThickness="2" 
-        Margin="0,10,0,0" 
-        Padding="15" 
-        Background="#FFF5F5"
-        Visibility="{Binding CriminalCaseVisibility}">
-                <StackPanel>
-                    <TextBlock Text="ДАННЫЕ УГОЛОВНОГО ДЕЛА" FontWeight="Bold" Foreground="DarkRed" Margin="0,0,0,10"/>
-
-                    <TextBlock Text="Дата возбуждения:"/>
-                    <DatePicker SelectedDate="{Binding UI_CriminalCaseDate}" Margin="0,5"/>
-
-                    <TextBlock Text="Статья (Квалификация):"/>
-                    <TextBox Text="{Binding NewCriminalCase.Qualification}" Margin="0,5" Height="25"/>
-                </StackPanel>
-            </Border>
-            <Border BorderBrush="DarkBlue" 
-        BorderThickness="2" 
-        Margin="0,10,0,0" 
-        Padding="15" 
-        Background="#F5F9FF"
-        Visibility="{Binding TransferVisibility}">
-                <StackPanel>
-                    <TextBlock Text="ТЕРРИТОРИАЛЬНАЯ ПЕРЕДАЧА" FontWeight="Bold" Foreground="DarkBlue" Margin="0,0,0,10"/>
-
-                    <TextBlock Text="Подразделение:"/>
-                    <TextBox Text="{Binding NewTransfer.Division}" Margin="0,5" Height="25"/>
-
-                    <TextBlock Text="Дата передачи:"/>
-                    <DatePicker SelectedDate="{Binding UI_TransferDate}" Margin="0,5"/>
-                </StackPanel>
-            </Border>
-
-
-            <Button Content="СОХРАНИТЬ" Command="{Binding SaveCommand}" 
-            Height="40" Background="#27ae60" Foreground="White" Margin="0,20,0,0"/>
+        <StackPanel Grid.Row="0" Margin="0,0,0,25">
+            <TextBlock Text="ЗАВЕРШЕНИЕ ПРОЦЕССА" FontSize="11" FontWeight="Bold" Foreground="#8B959E"/>
+            <TextBlock Text="Вынесение решения" FontSize="28" FontWeight="SemiBold" Foreground="#2D3436"/>
         </StackPanel>
+
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <Border Background="White" CornerRadius="20" Padding="25" Margin="0,0,0,20">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="20" ShadowDepth="4" Opacity="0.06"/>
+                    </Border.Effect>
+                    <StackPanel>
+                        <Border Background="{StaticResource SecondaryYellow}" CornerRadius="10" Padding="12,5" HorizontalAlignment="Left" Margin="0,0,0,15">
+                            <TextBlock Text="ОСНОВНЫЕ ПАРАМЕТРЫ" Foreground="#5D5B1A" FontWeight="Bold" FontSize="10"/>
+                        </Border>
+
+                        <TextBlock Text="Тип выносимого решения" Style="{StaticResource LabelStyle}"/>
+                        <ComboBox ItemsSource="{Binding DecisionTypes}" 
+                                  SelectedItem="{Binding SelectedType}" Height="40">
+                            <ComboBox.Resources>
+                                <Style TargetType="Border">
+                                    <Setter Property="CornerRadius" Value="8"/>
+                                </Style>
+                            </ComboBox.Resources>
+                        </ComboBox>
+
+                        <TextBlock Text="Правовое основание (статья, пункт)" Style="{StaticResource LabelStyle}"/>
+                        <TextBox Text="{Binding NewDecision.LegalBasis}" Height="40"/>
+
+                        <TextBlock Text="Дата принятия решения" Style="{StaticResource LabelStyle}"/>
+                        <DatePicker SelectedDate="{Binding UI_DecisionDate}" Height="40"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="White" CornerRadius="20" Padding="25" Margin="0,0,0,20" 
+                        BorderBrush="{StaticResource PrimaryPink}" BorderThickness="1"
+                        Visibility="{Binding CriminalCaseVisibility}">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="15" ShadowDepth="2" Opacity="0.08"/>
+                    </Border.Effect>
+                    <StackPanel>
+                        <TextBlock Text="ДАННЫЕ УГОЛОВНОГО ДЕЛА" FontWeight="Bold" FontSize="14" Foreground="#A64452" Margin="0,0,0,15"/>
+
+                        <UniformGrid Columns="2">
+                            <StackPanel Margin="0,0,10,0">
+                                <TextBlock Text="Дата возбуждения" Style="{StaticResource LabelStyle}"/>
+                                <DatePicker SelectedDate="{Binding UI_CriminalCaseDate}" Height="40"/>
+                            </StackPanel>
+                            <StackPanel>
+                                <TextBlock Text="Квалификация (Статья)" Style="{StaticResource LabelStyle}"/>
+                                <TextBox Text="{Binding NewCriminalCase.Qualification}" Height="40"/>
+                            </StackPanel>
+                        </UniformGrid>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="White" CornerRadius="20" Padding="25" Margin="0,0,0,20" 
+                        BorderBrush="{StaticResource SecondaryBlue}" BorderThickness="1"
+                        Visibility="{Binding TransferVisibility}">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="15" ShadowDepth="2" Opacity="0.08" />
+                    </Border.Effect>
+                    <StackPanel>
+                        <TextBlock Text="ТЕРРИТОРИАЛЬНАЯ ПЕРЕДАЧА" FontWeight="Bold" FontSize="14" Foreground="#4A90E2" Margin="0,0,0,15"/>
+
+                        <TextBlock Text="Куда передано (Подразделение)" Style="{StaticResource LabelStyle}"/>
+                        <TextBox Text="{Binding NewTransfer.Division}" Height="40" Margin="0,0,0,10"/>
+
+                        <TextBlock Text="Дата передачи материалов" Style="{StaticResource LabelStyle}"/>
+                        <DatePicker SelectedDate="{Binding UI_TransferDate}" Height="40"/>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+
+        <Button Grid.Row="2" 
+                Content="ПОДТВЕРДИТЬ И СОХРАНИТЬ" 
+                Command="{Binding SaveCommand}" 
+                Background="#27ae60" Foreground="White" 
+                FontWeight="Bold" Height="50" Width="280" HorizontalAlignment="Right">
+            <Button.Resources>
+                <Style TargetType="Border">
+                    <Setter Property="CornerRadius" Value="15"/>
+                </Style>
+            </Button.Resources>
+            <Button.Effect>
+                <DropShadowEffect BlurRadius="15" ShadowDepth="3" Opacity="0.2" Color="#27ae60"/>
+            </Button.Effect>
+        </Button>
     </Grid>
 </Page>

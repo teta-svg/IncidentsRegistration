@@ -23,6 +23,9 @@ namespace IncidentsRegistration.ViewModels
         private TerritorialTransfer _newTransfer;
 
         [ObservableProperty]
+        private SystemUser _currentUser;
+
+        [ObservableProperty]
         private string? _selectedType;
         public DateTime UI_DecisionDate
         {
@@ -51,10 +54,11 @@ namespace IncidentsRegistration.ViewModels
         public Visibility CriminalCaseVisibility => SelectedType == "возбуждено уголовное дело" ? Visibility.Visible : Visibility.Collapsed;
         public Visibility TransferVisibility => SelectedType == "передано по территориальному признаку" ? Visibility.Visible : Visibility.Collapsed;
 
-        public AddDecisionViewModel(IDecisionService service, int incidentId)
+        public AddDecisionViewModel(IDecisionService service, int incidentId, SystemUser currentUser)
         {
             _decisionService = service;
             _incidentId = incidentId;
+            _currentUser = currentUser;
 
             NewDecision = new Decision
             {
@@ -97,7 +101,17 @@ namespace IncidentsRegistration.ViewModels
 
             try
             {
-                _decisionService.SaveDecision(NewDecision, NewCriminalCase, NewTransfer);
+                var teamLink = _currentUser.SystemUserResponseTeams.FirstOrDefault();
+
+                if (teamLink == null)
+                {
+                    MessageBox.Show("Ошибка: Пользователь не привязан ни к одной группе реагирования!");
+                    return;
+                }
+
+                int teamId = teamLink.IdResponseTeam;
+
+                _decisionService.SaveDecision(NewDecision, NewCriminalCase, NewTransfer, teamId);
                 MessageBox.Show("Решение успешно сохранено.");
 
                 OnSuccess?.Invoke();

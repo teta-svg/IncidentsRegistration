@@ -9,11 +9,13 @@ namespace IncidentsRegistration.Services
         private readonly IncidentsDbContext _context;
         public DecisionService(IncidentsDbContext context) => _context = context;
 
-        public void SaveDecision(Decision decision, CriminalCase? cc, TerritorialTransfer? tt)
+        public void SaveDecision(Decision decision, CriminalCase? cc, TerritorialTransfer? tt, int teamId)
         {
             using var transaction = _context.Database.BeginTransaction();
             try
             {
+                decision.IdResponseTeam = teamId;
+
                 _context.Decisions.Add(decision);
                 _context.SaveChanges();
 

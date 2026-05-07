@@ -18,13 +18,15 @@ namespace IncidentsRegistration.Views
             {
                 var decisionService = services.GetRequiredService<IDecisionService>();
 
-                var decisionVm = new AddDecisionViewModel(decisionService, incidentId);
+                var decisionVm = new AddDecisionViewModel(decisionService, incidentId, vm.CurrentUser);
+
 
                 var decisionPage = new AddDecisionPage(decisionVm);
-
                 NavigationService.Navigate(decisionPage);
             };
+
             this.Loaded += (s, e) => vm.LoadDataCommand.Execute(null);
         }
     }
+
 }

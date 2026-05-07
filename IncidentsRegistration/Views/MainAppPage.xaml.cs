@@ -54,8 +54,14 @@ namespace IncidentsRegistration.Views
 
         private void Subjects_Click(object sender, RoutedEventArgs e)
         {
-            // MainFrame.Navigate(new SubjectsPage());
+            var incidentService = GetService<IIncidentService>();
+
+            var vm = new IncidentSubjectsViewModel(incidentService, _vm.CurrentUser);
+
+            MainFrame.Navigate(new IncidentSubjectsPage(vm));
         }
+
+
 
         private void Reports_Click(object sender, RoutedEventArgs e)
         {
@@ -70,6 +76,19 @@ namespace IncidentsRegistration.Views
         private void Users_Click(object sender, RoutedEventArgs e)
         {
             // MainFrame.Navigate(new UsersManagementPage());
+        }
+
+        private void Logout_Click(object sender, RoutedEventArgs e)
+        {
+            var result = MessageBox.Show("Вы уверены, что хотите выйти?", "Выход",
+                                        MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                var services = ((App)Application.Current).Services;
+                var loginPage = services.GetRequiredService<LoginPage>();
+                System.Windows.Navigation.NavigationService.GetNavigationService(this).Navigate(loginPage);
+            }
         }
     }
 }

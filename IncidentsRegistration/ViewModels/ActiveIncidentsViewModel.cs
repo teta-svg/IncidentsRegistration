@@ -9,7 +9,6 @@ namespace IncidentsRegistration.ViewModels
     public partial class ActiveIncidentsViewModel : ObservableObject
     {
         private readonly IIncidentService _incidentService;
-        private readonly SystemUser _currentUser;
 
         public ObservableCollection<Incident> ActiveIncidents { get; } = new();
 
@@ -18,6 +17,9 @@ namespace IncidentsRegistration.ViewModels
         [ObservableProperty]
         [NotifyCanExecuteChangedFor(nameof(MakeDecisionCommand))]
         private Incident? selectedIncident;
+
+        [ObservableProperty]
+        private SystemUser _currentUser;
 
         public ActiveIncidentsViewModel(IIncidentService incidentService, SystemUser currentUser)
         {

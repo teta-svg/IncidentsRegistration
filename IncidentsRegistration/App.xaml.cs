@@ -30,6 +30,7 @@ namespace IncidentsRegistration
             services.AddScoped<IIncidentService, IncidentService>();
             services.AddScoped<ILocationService, LocationService>();
             services.AddScoped<IResponseTeamService, ResponseTeamService>();
+            services.AddScoped<ISubjectService, SubjectService>();
             services.AddTransient<IExportService, ExportService>();
             services.AddTransient<IDecisionService, DecisionService>();
 
@@ -41,6 +42,9 @@ namespace IncidentsRegistration
             services.AddTransient<AddIncidentViewModel>();
             services.AddTransient<ActiveIncidentsViewModel>();
             services.AddTransient<AddDecisionViewModel>();
+            services.AddTransient<IncidentSubjectsViewModel>();
+            services.AddTransient<AddSubjectViewModel>();
+            services.AddTransient<SubjectDetailsViewModel>();
 
             // Страницы
             services.AddTransient<LoginPage>();
@@ -50,6 +54,9 @@ namespace IncidentsRegistration
             services.AddTransient<AddIncidentPage>();
             services.AddTransient<ActiveIncidentsPage>();
             services.AddTransient<AddDecisionPage>();
+            services.AddTransient<IncidentSubjectsPage>();
+            services.AddTransient<AddSubjectPage>();
+            services.AddTransient<SubjectDetailsPage>();
 
             return services.BuildServiceProvider();
         }

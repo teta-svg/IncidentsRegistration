@@ -4,6 +4,6 @@ namespace IncidentsRegistration.Interfaces
 {
     public interface IDecisionService
     {
-        void SaveDecision(Decision decision, CriminalCase? cc, TerritorialTransfer? tt);
+        void SaveDecision(Decision decision, CriminalCase? cc, TerritorialTransfer? tt, int teamId);
     }
 }
