@@ -14,11 +14,16 @@ namespace IncidentsRegistration.Views
             var dbContext = new IncidentsDbContext();
 
             var authService = new AuthService(dbContext);
+            var incidentService = new IncidentService(dbContext);
+
+            var exportService = new ExportService();
 
             MainFrame.Navigate(
                 new LoginPage(
                     new LoginViewModel(authService),
-                    new RegisterViewModel(authService)
+                    new RegisterViewModel(authService),
+                    incidentService,
+                    exportService
                 )
             );
         }

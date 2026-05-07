@@ -74,7 +74,10 @@ public partial class AddIncidentViewModel : ObservableObject
         {
             NewIncident.RegistrationDate = DateOnly.FromDateTime(DisplayDate);
             NewIncident.RegistrationTime = TimeOnly.FromDateTime(DisplayTime);
+
             NewIncident.IdResponseTeam = SelectedTeam?.IdResponseTeam;
+
+            NewIncident.IdResponseTeamNavigation = null;
 
             if (_isEditMode)
             {
@@ -94,4 +97,5 @@ public partial class AddIncidentViewModel : ObservableObject
             MessageBox.Show($"Ошибка: {fullMessage}");
         }
     }
+
 }

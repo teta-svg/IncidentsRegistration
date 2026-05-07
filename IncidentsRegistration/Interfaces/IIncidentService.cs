@@ -10,5 +10,6 @@ namespace IncidentsRegistration.Interfaces
         List<Incident> GetActiveIncidentsByTeam(int responseTeamId);
         Incident? GetFullIncidentDetails(int incidentId);
         void UpdateIncident(Incident incident, Location location);
+        void DeleteIncident(int incidentId);
     }
 }

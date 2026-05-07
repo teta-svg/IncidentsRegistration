@@ -1,9 +1,9 @@
 ﻿using IncidentsRegistration.Interfaces;
 using IncidentsRegistration.Models;
 using IncidentsRegistration.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
 using System.Windows.Controls;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace IncidentsRegistration.Views
 {
@@ -12,12 +12,22 @@ namespace IncidentsRegistration.Views
         private readonly LoginViewModel _vm;
         private readonly RegisterViewModel _registerVm;
 
-        public LoginPage(LoginViewModel vm, RegisterViewModel registerVm)
+        private readonly IIncidentService _incidentService;
+        private readonly IExportService _exportService;
+
+        public LoginPage(
+            LoginViewModel vm,
+            RegisterViewModel registerVm,
+            IIncidentService incidentService,
+            IExportService exportService)
         {
             InitializeComponent();
 
             _vm = vm;
             _registerVm = registerVm;
+            _incidentService = incidentService;
+            _exportService = exportService;
+
             DataContext = _vm;
 
             _vm.OnLoginSuccess = OnLoginSuccess;
@@ -42,12 +52,11 @@ namespace IncidentsRegistration.Views
             if (authService != null)
             {
                 var role = authService.GetRole(user);
-                var vm = new MainAppViewModel(user, role);
+                var vm = new MainAppViewModel(user, role, _incidentService, _exportService);
 
                 var mainWindow = Window.GetWindow(this) as MainWindow;
                 mainWindow?.MainFrame.Navigate(new MainAppPage(vm));
             }
         }
-
     }
 }

@@ -25,25 +25,35 @@ namespace IncidentsRegistration
             services.AddDbContext<IncidentsDbContext>(options =>
                 options.UseSqlServer("Server=.\\SQLEXPRESS;Database=Incidents_registration;Trusted_Connection=True;TrustServerCertificate=True;"));
 
+            // Сервисы
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IIncidentService, IncidentService>();
             services.AddScoped<ILocationService, LocationService>();
             services.AddScoped<IResponseTeamService, ResponseTeamService>();
+            services.AddTransient<IExportService, ExportService>();
+            services.AddTransient<IDecisionService, DecisionService>();
 
+            // ViewModels
             services.AddTransient<LoginViewModel>();
             services.AddTransient<RegisterViewModel>();
             services.AddTransient<IncidentsViewModel>();
             services.AddTransient<MainAppViewModel>();
             services.AddTransient<AddIncidentViewModel>();
+            services.AddTransient<ActiveIncidentsViewModel>();
+            services.AddTransient<AddDecisionViewModel>();
 
+            // Страницы
             services.AddTransient<LoginPage>();
             services.AddTransient<RegisterPage>();
             services.AddTransient<MainAppPage>();
             services.AddTransient<IncidentsPage>();
             services.AddTransient<AddIncidentPage>();
+            services.AddTransient<ActiveIncidentsPage>();
+            services.AddTransient<AddDecisionPage>();
 
             return services.BuildServiceProvider();
         }
+
 
 
         protected override void OnStartup(StartupEventArgs e)

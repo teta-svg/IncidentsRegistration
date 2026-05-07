@@ -1,0 +1,67 @@
+﻿<Page x:Class="IncidentsRegistration.Views.AddDecisionPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:IncidentsRegistration.Views"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="AddDecisionPage">
+
+    <Grid>
+        <StackPanel Margin="20">
+            <TextBlock Text="ВЫНЕСЕНИЕ РЕШЕНИЯ" FontSize="20" FontWeight="Bold" Margin="0,0,0,20"/>
+
+            <Border BorderBrush="Black" BorderThickness="1" Padding="15" Background="White">
+                <StackPanel>
+                    <TextBlock Text="Тип решения:"/>
+                    <ComboBox ItemsSource="{Binding DecisionTypes}" 
+                      SelectedItem="{Binding SelectedType}" Margin="0,5,0,15"/>
+
+                    <TextBlock Text="Правовое основание:"/>
+                    <TextBox Text="{Binding NewDecision.LegalBasis}" Margin="0,5,0,15"/>
+
+                    <TextBlock Text="Дата принятия решения:"/>
+                    <DatePicker SelectedDate="{Binding UI_DecisionDate}"/>
+
+                </StackPanel>
+            </Border>
+            <Border BorderBrush="DarkRed" 
+        BorderThickness="2" 
+        Margin="0,10,0,0" 
+        Padding="15" 
+        Background="#FFF5F5"
+        Visibility="{Binding CriminalCaseVisibility}">
+                <StackPanel>
+                    <TextBlock Text="ДАННЫЕ УГОЛОВНОГО ДЕЛА" FontWeight="Bold" Foreground="DarkRed" Margin="0,0,0,10"/>
+
+                    <TextBlock Text="Дата возбуждения:"/>
+                    <DatePicker SelectedDate="{Binding UI_CriminalCaseDate}" Margin="0,5"/>
+
+                    <TextBlock Text="Статья (Квалификация):"/>
+                    <TextBox Text="{Binding NewCriminalCase.Qualification}" Margin="0,5" Height="25"/>
+                </StackPanel>
+            </Border>
+            <Border BorderBrush="DarkBlue" 
+        BorderThickness="2" 
+        Margin="0,10,0,0" 
+        Padding="15" 
+        Background="#F5F9FF"
+        Visibility="{Binding TransferVisibility}">
+                <StackPanel>
+                    <TextBlock Text="ТЕРРИТОРИАЛЬНАЯ ПЕРЕДАЧА" FontWeight="Bold" Foreground="DarkBlue" Margin="0,0,0,10"/>
+
+                    <TextBlock Text="Подразделение:"/>
+                    <TextBox Text="{Binding NewTransfer.Division}" Margin="0,5" Height="25"/>
+
+                    <TextBlock Text="Дата передачи:"/>
+                    <DatePicker SelectedDate="{Binding UI_TransferDate}" Margin="0,5"/>
+                </StackPanel>
+            </Border>
+
+
+            <Button Content="СОХРАНИТЬ" Command="{Binding SaveCommand}" 
+            Height="40" Background="#27ae60" Foreground="White" Margin="0,20,0,0"/>
+        </StackPanel>
+    </Grid>
+</Page>

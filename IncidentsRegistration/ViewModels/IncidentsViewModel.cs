@@ -10,8 +10,6 @@ namespace IncidentsRegistration.ViewModels
     public partial class IncidentsViewModel : ObservableObject
     {
         private readonly IIncidentService _incidentService;
-        private readonly ILocationService _locationService;
-        private readonly IResponseTeamService _teamService;
 
         public ObservableCollection<Incident> Incidents { get; } = new();
 
@@ -22,14 +20,9 @@ namespace IncidentsRegistration.ViewModels
         [ObservableProperty]
         private Incident? selectedIncident;
 
-        public IncidentsViewModel(
-            IIncidentService incidentService,
-            ILocationService locationService,
-            IResponseTeamService teamService)
+        public IncidentsViewModel(IIncidentService incidentService)
         {
             _incidentService = incidentService;
-            _locationService = locationService;
-            _teamService = teamService;
         }
 
         [RelayCommand]
@@ -63,16 +56,6 @@ namespace IncidentsRegistration.ViewModels
         }
 
         [RelayCommand]
-        private void Refresh() => LoadData();
-
-        [RelayCommand]
-        private void Delete()
-        {
-            if (SelectedIncident == null) return;
-            MessageBox.Show("Функция удаления в разработке или требует прав админа.");
-        }
-
-        [RelayCommand]
         private void Update()
         {
             if (SelectedIncident != null)
@@ -84,5 +67,34 @@ namespace IncidentsRegistration.ViewModels
                 MessageBox.Show("Выберите инцидент для редактирования");
             }
         }
+
+        [RelayCommand]
+        private void Delete()
+        {
+            if (SelectedIncident == null) return;
+
+            var result = MessageBox.Show(
+                $"Удалить инцидент №{SelectedIncident.IdIncident} и все связанные с ним решения?",
+                "Подтверждение",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                try
+                {
+                    _incidentService.DeleteIncident(SelectedIncident.IdIncident);
+
+                    LoadData();
+
+                    MessageBox.Show("Запись успешно удалена");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Не удалось удалить: {ex.Message}");
+                }
+            }
+        }
+
     }
 }

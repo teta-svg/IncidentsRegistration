@@ -63,8 +63,11 @@
                 <TextBlock Text="Действия" FontWeight="Bold" Margin="0,0,0,10"/>
 
                 <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button Content="ВЫНЕСТИ РЕШЕНИЕ" Background="{StaticResource SecondaryYellow}" FontWeight="Bold" Width="180" Height="40" Margin="5,0"/>
+                    <Button Content="ВЫНЕСТИ РЕШЕНИЕ" Command="{Binding MakeDecisionCommand}" 
+                            Background="{StaticResource SecondaryYellow}" 
+                            FontWeight="Bold" Width="180" Height="40" Margin="5,0"/>
                 </StackPanel>
+
             </Grid>
         </Border>
     </Grid>

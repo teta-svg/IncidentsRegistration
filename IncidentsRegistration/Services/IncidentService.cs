@@ -36,11 +36,18 @@ namespace IncidentsRegistration.Services
             return _context.Incidents
                 .AsNoTracking()
                 .Include(i => i.Decision)
+                    .ThenInclude(d => d.CriminalCase)
+                .Include(i => i.Decision)
+                    .ThenInclude(d => d.TerritorialTransfer)
                 .Include(i => i.IdResponseTeamNavigation)
                 .Include(i => i.IncidentLocations)
                     .ThenInclude(il => il.IdLocationNavigation)
-                .Include(i => i.SubjectRoles);
+                .Include(i => i.SubjectRoles)
+                    .ThenInclude(sr => sr.IdSubjectNavigation)
+                .OrderByDescending(i => i.RegistrationDate)
+                .ThenByDescending(i => i.RegistrationTime);
         }
+
 
         public List<Incident> GetActiveIncidentsByTeam(int responseTeamId)
         {
@@ -68,9 +75,54 @@ namespace IncidentsRegistration.Services
         public void UpdateIncident(Incident incident, Location location)
         {
             _context.ChangeTracker.Clear();
+
+            _context.Entry(incident).Property(i => i.IdResponseTeam).IsModified = true;
+
             _context.Incidents.Update(incident);
             _context.Locations.Update(location);
+
             _context.SaveChanges();
         }
+        public void DeleteIncident(int incidentId)
+        {
+            var incident = _context.Incidents
+                .Include(i => i.IncidentLocations)
+                .Include(i => i.SubjectRoles)
+                .Include(i => i.Decision)
+                    .ThenInclude(d => d.CriminalCase)
+                .Include(i => i.Decision)
+                    .ThenInclude(d => d.TerritorialTransfer)
+                .FirstOrDefault(i => i.IdIncident == incidentId);
+
+            if (incident == null) return;
+
+            if (incident.IncidentLocations.Any())
+            {
+                _context.IncidentLocations.RemoveRange(incident.IncidentLocations);
+            }
+
+            if (incident.SubjectRoles.Any())
+            {
+                _context.SubjectRoles.RemoveRange(incident.SubjectRoles);
+            }
+
+            if (incident.Decision != null)
+            {
+                if (incident.Decision.CriminalCase != null)
+                {
+                    _context.CriminalCases.Remove(incident.Decision.CriminalCase);
+                }
+
+                if (incident.Decision.TerritorialTransfer != null)
+                {
+                    _context.TerritorialTransfers.Remove(incident.Decision.TerritorialTransfer);
+                }
+                _context.Decisions.Remove(incident.Decision);
+            }
+            _context.Incidents.Remove(incident);
+
+            _context.SaveChanges();
+        }
+
     }
 }

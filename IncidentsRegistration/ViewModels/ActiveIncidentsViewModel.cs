@@ -13,9 +13,10 @@ namespace IncidentsRegistration.ViewModels
 
         public ObservableCollection<Incident> ActiveIncidents { get; } = new();
 
+        public Action<int>? OnMakeDecisionRequested;
+
         [ObservableProperty]
-        [NotifyCanExecuteChangedFor(nameof(DetailsCommand))]
-        [NotifyCanExecuteChangedFor(nameof(AddDecisionCommand))]
+        [NotifyCanExecuteChangedFor(nameof(MakeDecisionCommand))]
         private Incident? selectedIncident;
 
         public ActiveIncidentsViewModel(IIncidentService incidentService, SystemUser currentUser)
@@ -26,7 +27,7 @@ namespace IncidentsRegistration.ViewModels
         }
 
         [RelayCommand]
-        private void LoadData()
+        public void LoadData()
         {
             ActiveIncidents.Clear();
             var teamId = _currentUser.SystemUserResponseTeams.FirstOrDefault()?.IdResponseTeam;
@@ -39,10 +40,13 @@ namespace IncidentsRegistration.ViewModels
         }
 
         [RelayCommand(CanExecute = nameof(HasSelection))]
-        private void Details() { /* Логика открытия окна деталей */ }
-
-        [RelayCommand(CanExecute = nameof(HasSelection))]
-        private void AddDecision() { /* Логика открытия окна решения */ }
+        private void MakeDecision()
+        {
+            if (SelectedIncident != null)
+            {
+                OnMakeDecisionRequested?.Invoke(SelectedIncident.IdIncident);
+            }
+        }
 
         private bool HasSelection() => SelectedIncident != null;
     }

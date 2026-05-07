@@ -33,8 +33,9 @@
               Click="Subjects_Click"/>
 
                 <MenuItem Header="Отчеты"
-              Visibility="{Binding CanSeeOperational, Converter={StaticResource BoolToVis}}"
-              Click="Reports_Click"/>
+                          Visibility="{Binding CanSeeOperational, Converter={StaticResource BoolToVis}}"
+                          Command="{Binding ExportGeneralReportCommand}"/>
+
 
                 <MenuItem Header="Группы реагирования"
               Visibility="{Binding IsAdmin, Converter={StaticResource BoolToVis}}"

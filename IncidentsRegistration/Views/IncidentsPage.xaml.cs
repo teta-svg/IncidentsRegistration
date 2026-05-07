@@ -34,8 +34,7 @@ namespace IncidentsRegistration.Views
                 NavigationService.Navigate(new AddIncidentPage(editVm));
             };
 
-
-            vm.LoadData();
+            this.Loaded += (s, e) => vm.LoadData();
         }
 
     }
