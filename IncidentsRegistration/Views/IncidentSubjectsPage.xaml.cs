@@ -36,10 +36,24 @@ namespace IncidentsRegistration.Views
 
             vm.OnShowDetailsRequested = (incident) =>
             {
-                var detailsVm = new SubjectDetailsViewModel(incident);
+                var subjectService = ((App)Application.Current).Services.GetRequiredService<ISubjectService>();
+                var detailsVm = new SubjectDetailsViewModel(incident, subjectService);
+
                 NavigationService.Navigate(new SubjectDetailsPage(detailsVm));
             };
 
+            vm.OnUpdateParticipantRequested = (incidentId, subject) =>
+            {
+                var subjectService = services.GetRequiredService<ISubjectService>();
+                var addVm = new AddSubjectViewModel(subjectService, incidentId, subject);
+
+                addVm.OnSuccess = () => {
+                    if (NavigationService.CanGoBack) NavigationService.GoBack();
+                    vm.LoadData();
+                };
+
+                NavigationService.Navigate(new AddSubjectPage(addVm));
+            };
 
             this.Loaded += (s, e) => vm.LoadData();
         }

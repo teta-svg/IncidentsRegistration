@@ -14,7 +14,7 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0">
-            <TextBlock Text="СОСТАВ ИНЦИДЕНТА" FontSize="11" FontWeight="Bold" Foreground="#8B959E"/>
+            <TextBlock Text="СОСТАВ ИНЦИДЕНТА" FontSize="11" FontWeight="Bold"/>
             <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
                 <Border Background="{StaticResource PrimaryGreen}" Width="8" Height="30" CornerRadius="4" Margin="0,0,15,0"/>
                 <TextBlock Text="Участники по делу" FontSize="28" FontWeight="SemiBold" Foreground="#2D3436"/>
@@ -54,19 +54,19 @@
 
                             <StackPanel Grid.Column="0" VerticalAlignment="Center">
                                 <Border Background="{StaticResource SecondaryBlue}" CornerRadius="8" Padding="10,4">
-                                    <TextBlock Text="{Binding RegistrationTime, StringFormat=\{0:HH:mm\}}" FontWeight="Bold" Foreground="#4A90E2" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="{Binding RegistrationTime, StringFormat=\{0:HH:mm\}}" FontWeight="Bold" HorizontalAlignment="Center"/>
                                 </Border>
-                                <TextBlock Text="{Binding RegistrationDate, StringFormat=\{0:dd.MM.yy\}}" FontSize="10" Foreground="#ADB5BD" HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                                <TextBlock Text="{Binding RegistrationDate, StringFormat=\{0:dd.MM.yy\}}" FontSize="10" HorizontalAlignment="Center" Margin="0,4,0,0"/>
                             </StackPanel>
 
                             <StackPanel Grid.Column="1" Margin="20,0" VerticalAlignment="Center">
-                                <TextBlock Text="{Binding TypeOfIncident}" FontSize="16" FontWeight="Bold" Foreground="#2D3436"/>
-                                <TextBlock Text="{Binding IdIncident, StringFormat='ID: {0}'}" Foreground="#8B959E" FontSize="11"/>
+                                <TextBlock Text="{Binding TypeOfIncident}" FontSize="16" FontWeight="Bold"/>
+                                <TextBlock Text="{Binding IdIncident, StringFormat='ID: {0}'}" FontSize="11"/>
                             </StackPanel>
 
                             <Border Grid.Column="2" Background="#F8F9FA" CornerRadius="10" Padding="10" VerticalAlignment="Center">
                                 <StackPanel>
-                                    <TextBlock Text="ЗАРЕГИСТРИРОВАНЫ:" FontSize="9" FontWeight="Bold" Foreground="#ADB5BD" Margin="0,0,0,5"/>
+                                    <TextBlock Text="ЗАРЕГИСТРИРОВАНЫ:" FontSize="9" FontWeight="Bold" Margin="0,0,0,5"/>
                                     <ItemsControl ItemsSource="{Binding SubjectRoles}">
                                         <ItemsControl.ItemsPanel>
                                             <ItemsPanelTemplate>
@@ -76,17 +76,8 @@
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
                                                 <StackPanel Orientation="Horizontal" Margin="0,0,10,5">
-                                                    <TextBlock Text="{Binding RoleName}" 
-                           FontSize="10" 
-                           FontWeight="Bold" 
-                           Foreground="#4A90E2" 
-                           VerticalAlignment="Center"
-                           Margin="0,0,4,0"/>
-                                                    <TextBlock Text="{Binding IdSubjectNavigation.LastName}" 
-                           FontSize="13"
-                           Foreground="#2D3436" 
-                           VerticalAlignment="Center"/>
-
+                                                    <TextBlock Text="{Binding RoleName}" FontSize="10" FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                                                    <TextBlock Text="{Binding IdSubjectNavigation.LastName}" FontSize="13" VerticalAlignment="Center"/>
                                                     <TextBlock Text=";" Foreground="#ADB5BD" VerticalAlignment="Center" Margin="2,0,0,0"/>
                                                 </StackPanel>
                                             </DataTemplate>
@@ -127,10 +118,8 @@
                         </Setter>
                     </Style>
                 </StackPanel.Resources>
-                <Button Content="ПОДРОБНЕЕ" Command="{Binding ShowSubjectDetailsCommand}" Background="{StaticResource SecondaryBlue}" Foreground="#2C3E50"/>
-                <Button Content="ДОБАВИТЬ" Command="{Binding AddParticipantCommand}" Background="{StaticResource PrimaryGreen}" Foreground="#2D4A3E"/>
-                <Button Content="ОБНОВИТЬ" Command="{Binding RefreshCommand}" Background="{StaticResource SecondaryYellow}" Foreground="#5D5B1A"/>
-                <Button Content="УДАЛИТЬ" Command="{Binding RemoveParticipantCommand}" Background="{StaticResource PrimaryPink}" Foreground="#A64452"/>
+                <Button Content="ПОДРОБНЕЕ" Command="{Binding ShowSubjectDetailsCommand}" Background="{StaticResource SecondaryBlue}"/>
+                <Button Content="ДОБАВИТЬ" Command="{Binding AddParticipantCommand}" Background="{StaticResource PrimaryGreen}"/>
             </StackPanel>
         </Border>
     </Grid>

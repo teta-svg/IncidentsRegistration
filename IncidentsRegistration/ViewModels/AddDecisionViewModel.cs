@@ -87,18 +87,7 @@ namespace IncidentsRegistration.ViewModels
         [RelayCommand]
         private void Save()
         {
-            if (string.IsNullOrWhiteSpace(SelectedType))
-            {
-                MessageBox.Show("Выберите тип решения!");
-                return;
-            }
-
-            if (string.IsNullOrWhiteSpace(NewDecision.LegalBasis))
-            {
-                MessageBox.Show("Укажите правовое основание!");
-                return;
-            }
-
+           
             try
             {
                 var teamLink = _currentUser.SystemUserResponseTeams.FirstOrDefault();

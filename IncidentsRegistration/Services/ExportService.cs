@@ -8,12 +8,11 @@ namespace IncidentsRegistration.Services
     {
         public void ExportAllIncidentsToExcel(List<Incident> incidents, string filePath)
         {
-
             using (var workbook = new XLWorkbook())
             {
                 var ws = workbook.Worksheets.Add("Отчет по инцидентам");
 
-                string[] headers = { "ID", "Дата/Время", "Тип", "Группа", "Адреса", "Участники (ФИО - Роль)", "Решение и УД" };
+                string[] headers = { "ID", "Дата/Время", "Тип", "Группа", "Адреса", "Участники", "Решение и УД" };
                 for (int i = 0; i < headers.Length; i++)
                 {
                     var cell = ws.Cell(1, i + 1);
@@ -40,15 +39,19 @@ namespace IncidentsRegistration.Services
 
                     ws.Cell(row, 5).Value = string.Join(Environment.NewLine, addressStrings);
 
-                    var subjectStrings = incident.SubjectRoles.Select(sr =>
-                    {
-                        var s = sr.IdSubjectNavigation;
-
-                        if (s == null) return $"[Данные отсутствуют] — ({sr.RoleName})";
-
-                        string fio = $"{s.LastName} {s.FirstName} {s.Patronymic}".Trim();
-                        return $"{fio} — ({sr.RoleName})";
-                    });
+                    var subjectStrings = incident.SubjectRoles
+                        .GroupBy(sr => sr.IdSubject)
+                        .Select(g => g
+                            .OrderByDescending(sr => sr.DateOfInvolvement)
+                            .ThenByDescending(sr => sr.IdSubjectRole)
+                            .First())
+                        .Select(sr =>
+                        {
+                            var s = sr.IdSubjectNavigation;
+                            if (s == null) return $"[Данные отсутствуют] — ({sr.RoleName})";
+                            string fio = $"{s.LastName} {s.FirstName} {s.Patronymic}".Trim();
+                            return $"{fio} — ({sr.RoleName})";
+                        });
 
                     ws.Cell(row, 6).Value = string.Join(Environment.NewLine, subjectStrings);
 

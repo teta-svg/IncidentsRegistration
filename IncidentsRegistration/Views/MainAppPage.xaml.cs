@@ -54,9 +54,10 @@ namespace IncidentsRegistration.Views
 
         private void Subjects_Click(object sender, RoutedEventArgs e)
         {
-            var incidentService = GetService<IIncidentService>();
+            var subjectService = ((App)Application.Current).Services.GetRequiredService<ISubjectService>();
+            var incidentService = ((App)Application.Current).Services.GetRequiredService<IIncidentService>();
+            var vm = new IncidentSubjectsViewModel(incidentService, subjectService, _vm.CurrentUser);
 
-            var vm = new IncidentSubjectsViewModel(incidentService, _vm.CurrentUser);
 
             MainFrame.Navigate(new IncidentSubjectsPage(vm));
         }

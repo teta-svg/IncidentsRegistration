@@ -59,7 +59,7 @@ namespace IncidentsRegistration.Services
 
         public Incident? GetFullIncidentDetails(int incidentId)
         {
-            return _context.Incidents
+            var incident = _context.Incidents
                 .Include(i => i.IdResponseTeamNavigation)
                 .Include(i => i.IncidentLocations)
                     .ThenInclude(il => il.IdLocationNavigation)
@@ -70,7 +70,21 @@ namespace IncidentsRegistration.Services
                 .Include(i => i.Decision)
                     .ThenInclude(d => d.TerritorialTransfer)
                 .FirstOrDefault(i => i.IdIncident == incidentId);
+
+            if (incident != null && incident.SubjectRoles != null)
+            {
+                incident.SubjectRoles = incident.SubjectRoles
+                    .GroupBy(sr => sr.IdSubject)
+                    .Select(g => g
+                        .OrderByDescending(sr => sr.DateOfInvolvement)
+                        .ThenByDescending(sr => sr.IdSubjectRole)
+                        .First())
+                    .ToList();
+            }
+
+            return incident;
         }
+
 
         public void UpdateIncident(Incident incident, Location location)
         {

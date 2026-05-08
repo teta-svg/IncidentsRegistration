@@ -51,7 +51,7 @@
                     <Border Background="{StaticResource PrimaryGreen}" Width="35" Height="35" CornerRadius="10">
                         <TextBlock Text="🛡️" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18"/>
                     </Border>
-                    <TextBlock Text="GUARD" FontSize="20" FontWeight="Bold" VerticalAlignment="Center" Margin="15,0" Foreground="#2D3436"/>
+                    <TextBlock Text="Рапорт" FontSize="20" FontWeight="Bold" VerticalAlignment="Center" Margin="15,0" Foreground="#2D3436"/>
                 </StackPanel>
 
                 <StackPanel Grid.Row="1">
@@ -66,7 +66,7 @@
                             Click="ActiveIncidents_Click"/>
 
                     <Button Content="Участники" Style="{StaticResource MenuButtonStyle}"
-                            Visibility="{Binding CanSeeOperational, Converter={StaticResource BoolToVis}}"
+                            Visibility="{Binding IsLead, Converter={StaticResource BoolToVis}}"
                             Click="Subjects_Click"/>
 
                     <TextBlock Text="АНАЛИТИКА" FontSize="10" FontWeight="Bold" Foreground="#ADB5BD" Margin="25,20,0,10"/>

@@ -10,7 +10,6 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <!-- 🏷️ Заголовок в стиле Dashboard -->
         <StackPanel Grid.Row="0" Margin="0,0,0,20">
             <TextBlock Text="СИСТЕМА РЕГИСТРАЦИИ" FontSize="11" FontWeight="Bold" Foreground="#8B959E"/>
             <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
@@ -19,7 +18,6 @@
             </StackPanel>
         </StackPanel>
 
-        <!-- 📋 Список инцидентов (вместо страшной таблицы) -->
         <ListBox Grid.Row="1" 
                  ItemsSource="{Binding ActiveIncidents}"
                  SelectedItem="{Binding SelectedIncident}"
@@ -27,7 +25,6 @@
                  BorderThickness="0"
                  VirtualizingStackPanel.IsVirtualizing="True">
 
-            <!-- Убираем синее выделение ListBoxItem по умолчанию -->
             <ListBox.ItemContainerStyle>
                 <Style TargetType="ListBoxItem">
                     <Setter Property="Template">
@@ -42,7 +39,6 @@
 
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <!-- Каждая строка теперь — "пухлая" карточка -->
                     <Border x:Name="CardBorder" Background="White" CornerRadius="15" Margin="0,0,0,12" Padding="20">
                         <Border.Effect>
                             <DropShadowEffect BlurRadius="15" ShadowDepth="2" Opacity="0.08"/>
@@ -51,14 +47,10 @@
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
-                                <!-- Время -->
                                 <ColumnDefinition Width="*"/>
-                                <!-- Основная инфа -->
                                 <ColumnDefinition Width="Auto"/>
-                                <!-- Дата/Группа -->
                             </Grid.ColumnDefinitions>
 
-                            <!-- Время в цветном блоке -->
                             <Border Grid.Column="0" Background="{StaticResource SecondaryBlue}" CornerRadius="10" Padding="10,5" VerticalAlignment="Center">
                                 <TextBlock Text="{Binding RegistrationTime, StringFormat=\{0:HH:mm\}}" FontWeight="Bold" Foreground="#4A90E2"/>
                             </Border>
@@ -75,13 +67,11 @@
 
                             <StackPanel Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right">
                                 <TextBlock Text="{Binding RegistrationDate, StringFormat=\{0:dd MMM yyyy\}}" Foreground="#8B959E" FontSize="12" HorizontalAlignment="Right"/>
-                                <!-- Индикатор статуса (просто для красоты) -->
                                 <Border Background="{StaticResource PrimaryPink}" CornerRadius="5" Height="5" Width="40" Margin="0,8,0,0" HorizontalAlignment="Right"/>
                             </StackPanel>
                         </Grid>
                     </Border>
 
-                    <!-- Триггер для изменения вида при выборе -->
                     <DataTemplate.Triggers>
                         <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" Value="True">
                             <Setter TargetName="CardBorder" Property="BorderBrush" Value="{StaticResource PrimaryGreen}"/>
@@ -93,7 +83,6 @@
             </ListBox.ItemTemplate>
         </ListBox>
 
-        <!-- ⚡ Нижняя панель действий -->
         <Border Grid.Row="2" Background="White" CornerRadius="20" Padding="15" Margin="0,15,0,0">
             <Border.Effect>
                 <DropShadowEffect BlurRadius="10" ShadowDepth="0" Opacity="0.05"/>

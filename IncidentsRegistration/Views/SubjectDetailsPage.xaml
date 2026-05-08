@@ -3,9 +3,34 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:IncidentsRegistration.Views"
+      x:Name="DetailsPage"
       mc:Ignorable="d" 
       Background="#F0F2F5" Title="Детальная информация">
+
+    <Page.Resources>
+        <Style x:Key="ActionButtonStyle" TargetType="Button">
+            <Setter Property="Foreground" Value="#2D3436"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="10"/>
+            <Setter Property="Height" Value="28"/>
+            <Setter Property="Width" Value="100"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="8">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Opacity" Value="0.8"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Page.Resources>
 
     <Grid Margin="24">
         <Grid.RowDefinitions>
@@ -14,13 +39,13 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="0" Margin="0,0,0,20">
+        <StackPanel Grid.Row="0" Margin="0,0,0,25">
             <TextBlock Text="ДЕТАЛЬНОЕ ДОСЬЕ" FontSize="11" FontWeight="Bold" Foreground="#8B959E"/>
             <TextBlock Text="Участники инцидента" FontSize="28" FontWeight="SemiBold" Foreground="#2D3436"/>
         </StackPanel>
 
         <ListBox Grid.Row="1" 
-                 ItemsSource="{Binding CurrentIncident.SubjectRoles}" 
+                ItemsSource="{Binding UniqueParticipants}"
                  Background="Transparent" 
                  BorderThickness="0"
                  HorizontalContentAlignment="Stretch"
@@ -29,81 +54,76 @@
                 <DataTemplate>
                     <Border Background="White" CornerRadius="20" Margin="0,0,10,15" Padding="20">
                         <Border.Effect>
-                            <DropShadowEffect BlurRadius="10" Opacity="0.05" ShadowDepth="2"/>
+                            <DropShadowEffect BlurRadius="15" Opacity="0.05" ShadowDepth="2"/>
                         </Border.Effect>
                         <Grid>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="150"/>
+                                <ColumnDefinition Width="140"/>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="120"/>
                             </Grid.ColumnDefinitions>
 
-                            <Border Grid.Column="0" 
-                                    Background="{StaticResource SecondaryBlue}" 
-                                    CornerRadius="10" 
-                                    Padding="10,5" 
-                                    VerticalAlignment="Center" 
-                                    HorizontalAlignment="Left"
-                                    Height="30"
-                                    MinWidth="130">
-                                <TextBlock Text="{Binding RoleName}" 
-                                           FontWeight="Bold" 
-                                           Foreground="#4A90E2" 
-                                           HorizontalAlignment="Center"
-                                           VerticalAlignment="Center"
-                                           FontSize="11"/>
+                            <Border Grid.Column="0" Background="#EDF2FF" CornerRadius="10" Padding="10,5" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                <TextBlock Text="{Binding RoleName}" FontWeight="Bold" Foreground="#4C6EF5" FontSize="11" HorizontalAlignment="Center"/>
                             </Border>
 
-                            <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="10,0">
-                                <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
-                                    <TextBlock Text="{Binding IdSubjectNavigation.LastName}" FontSize="20" FontWeight="Bold" Foreground="#2D3436"/>
-                                    <TextBlock Text="{Binding IdSubjectNavigation.FirstName}" FontSize="20" FontWeight="Bold" Foreground="#2D3436" Margin="8,0"/>
-                                    <TextBlock Text="{Binding IdSubjectNavigation.Patronymic}" FontSize="20" FontWeight="Bold" Foreground="#2D3436"/>
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="20,0">
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                                    <TextBlock Text="{Binding IdSubjectNavigation.LastName}" FontSize="18" FontWeight="Bold" Foreground="#2D3436"/>
+                                    <TextBlock Text="{Binding IdSubjectNavigation.FirstName}" FontSize="18" FontWeight="Bold" Foreground="#2D3436" Margin="6,0"/>
+                                    <TextBlock Text="{Binding IdSubjectNavigation.Patronymic}" FontSize="18" FontWeight="Bold" Foreground="#2D3436"/>
                                 </StackPanel>
-
-                                <TextBlock Text="АДРЕС РЕГИСТРАЦИИ:" FontSize="10" FontWeight="Bold" Foreground="#ADB5BD"/>
-                                <TextBlock Foreground="#636E72" FontSize="13">
-                                    <Run Text="{Binding IdSubjectNavigation.Settlement}"/>, 
-                                    <Run Text="{Binding IdSubjectNavigation.Street}"/>, 
-                                    д. <Run Text="{Binding IdSubjectNavigation.House}"/>, 
-                                    кв. <Run Text="{Binding IdSubjectNavigation.Room}"/>
+                                <TextBlock Text="АДРЕС:" FontSize="9" FontWeight="Bold" Foreground="#ADB5BD"/>
+                                <TextBlock Foreground="#636E72" FontSize="12">
+                                    <Run Text="{Binding IdSubjectNavigation.Settlement}"/>, <Run Text="{Binding IdSubjectNavigation.Street}"/>, <Run Text="{Binding IdSubjectNavigation.House}"/>-<Run Text="{Binding IdSubjectNavigation.Room}"/>
                                 </TextBlock>
                             </StackPanel>
 
-                            <Border Grid.Column="2" 
-                                    Background="{StaticResource PrimaryPink}" 
-                                    CornerRadius="10" 
-                                    Padding="15,10" 
-                                    VerticalAlignment="Center" 
-                                    MinWidth="110">
+                            <Border Grid.Column="2" VerticalAlignment="Center" Margin="0,0,20,0" Background="#FFF5F5" CornerRadius="12" Padding="12,8">
                                 <StackPanel HorizontalAlignment="Center">
-                                    <TextBlock FontSize="24" FontWeight="Bold" HorizontalAlignment="Center">
+                                    <TextBlock FontSize="18" FontWeight="Bold" Foreground="#FA5252" HorizontalAlignment="Center">
                                         <TextBlock.Style>
                                             <Style TargetType="TextBlock">
                                                 <Setter Property="Text" Value="{Binding IdSubjectNavigation.NumberOfConvictions}"/>
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding IdSubjectNavigation.NumberOfConvictions}" Value="0">
-                                                        <Setter Property="Text" Value="НЕТ"/>
-                                                        <Setter Property="FontSize" Value="18"/>
+                                                        <Setter Property="Text" Value="0"/>
                                                     </DataTrigger>
                                                     <DataTrigger Binding="{Binding IdSubjectNavigation.NumberOfConvictions}" Value="{x:Null}">
-                                                        <Setter Property="Text" Value="НЕТ"/>
-                                                        <Setter Property="FontSize" Value="18"/>
+                                                        <Setter Property="Text" Value="0"/>
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
                                         </TextBlock.Style>
                                     </TextBlock>
-                                    <TextBlock Text="СУДИМОСТЕЙ" FontSize="9" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="СУДИМОСТЕЙ" FontSize="7" FontWeight="Black" Foreground="#FA5252" HorizontalAlignment="Center"/>
                                 </StackPanel>
                             </Border>
+
+                            <StackPanel Grid.Column="3" VerticalAlignment="Center">
+                                <Button Content="ОБНОВИТЬ" 
+                                        Style="{StaticResource ActionButtonStyle}"
+                                        Background="#FFD43B"
+                                        Margin="0,0,0,8"
+                                        Command="{Binding DataContext.UpdateParticipantCommand, Source={x:Reference DetailsPage}}" 
+                                        CommandParameter="{Binding .}"/>
+
+                                <Button Content="УДАЛИТЬ" 
+                                        Style="{StaticResource ActionButtonStyle}"
+                                        Background="#FF8787"
+                                        Foreground="White"
+                                        Command="{Binding DataContext.RemoveParticipantCommand, Source={x:Reference DetailsPage}}" 
+                                        CommandParameter="{Binding .}"/>
+                            </StackPanel>
                         </Grid>
                     </Border>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
 
-        <Button Grid.Row="2" Content="← НАЗАД" Click="Back_Click" 
-                HorizontalAlignment="Left" Background="Transparent" BorderThickness="0" Foreground="#8B959E" Cursor="Hand" FontWeight="SemiBold"/>
+        <Button Grid.Row="2" Content="← НАЗАД К ИНЦИДЕНТАМ" Click="Back_Click" 
+                HorizontalAlignment="Left" Background="Transparent" BorderThickness="0" 
+                Foreground="#8B959E" Cursor="Hand" FontWeight="Bold" Margin="0,15,0,0"/>
     </Grid>
 </Page>
