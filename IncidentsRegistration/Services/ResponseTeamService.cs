@@ -55,5 +55,43 @@ namespace IncidentsRegistration.Services
                 .ToList();
         }
 
+        public void AddTeam(ResponseTeam team)
+        {
+            if (team == null) throw new ArgumentNullException(nameof(team));
+
+            _context.ResponseTeams.Add(team);
+            _context.SaveChanges();
+        }
+
+        public void UpdateTeam(ResponseTeam team)
+        {
+            var existingTeam = _context.ResponseTeams.Find(team.IdResponseTeam);
+
+            if (existingTeam == null)
+                throw new ArgumentException("Команда не найдена");
+
+            existingTeam.NameTeam = team.NameTeam;
+            existingTeam.DirectorLastName = team.DirectorLastName;
+            existingTeam.DirectorFirstName = team.DirectorFirstName;
+            existingTeam.DirectorPatronymic = team.DirectorPatronymic;
+            existingTeam.NumberOfPeople = team.NumberOfPeople;
+
+            _context.SaveChanges();
+        }
+
+        public void DeleteTeam(int teamId)
+        {
+            var team = _context.ResponseTeams.Find(teamId);
+
+            if (team == null)
+                throw new ArgumentException("Команда не найдена");
+            bool hasIncidents = _context.Incidents.Any(i => i.IdResponseTeam == teamId);
+            if (hasIncidents)
+                throw new InvalidOperationException("Нельзя удалить команду, у которой есть история инцидентов");
+
+            _context.ResponseTeams.Remove(team);
+            _context.SaveChanges();
+        }
+
     }
 }

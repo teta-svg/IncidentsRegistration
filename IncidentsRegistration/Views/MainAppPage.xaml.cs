@@ -62,17 +62,14 @@ namespace IncidentsRegistration.Views
             MainFrame.Navigate(new IncidentSubjectsPage(vm));
         }
 
-
-
-        private void Reports_Click(object sender, RoutedEventArgs e)
-        {
-            // MainFrame.Navigate(new ReportsPage());
-        }
-
         private void Teams_Click(object sender, RoutedEventArgs e)
         {
-            // MainFrame.Navigate(new TeamsManagementPage());
+            var teamsPage = ((App)Application.Current).Services.GetRequiredService<ResponseTeamsPage>();
+
+            MainFrame.Navigate(teamsPage);
         }
+
+
 
         private void Users_Click(object sender, RoutedEventArgs e)
         {

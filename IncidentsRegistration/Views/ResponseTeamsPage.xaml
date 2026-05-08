@@ -1,0 +1,89 @@
+﻿<Page x:Class="IncidentsRegistration.Views.ResponseTeamsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Background="#F0F2F5" Title="Группы реагирования">
+
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0">
+            <TextBlock Text="УПРАВЛЕНИЕ ПЕРСОНАЛОМ" FontSize="11" FontWeight="Bold" Foreground="#8B959E"/>
+            <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                <Border Background="{StaticResource PrimaryGreen}" Width="8" Height="30" CornerRadius="4" Margin="0,0,15,0"/>
+                <TextBlock Text="Группы реагирования" FontSize="28" FontWeight="SemiBold" Foreground="#2D3436"/>
+            </StackPanel>
+        </StackPanel>
+
+        <Grid Grid.Row="1" Margin="0,20,0,15">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Orientation="Horizontal" Grid.Column="0">
+                <Border Background="White" CornerRadius="10" BorderThickness="1" BorderBrush="#E9ECEF" Padding="10,2" Width="250">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="🔍" VerticalAlignment="Center" Margin="5,0,10,0" Foreground="#ADB5BD"/>
+                        <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" Grid.Column="1" BorderThickness="0" Background="Transparent" VerticalAlignment="Center"/>
+                    </Grid>
+                </Border>
+
+                <Button Content="Изменить" Command="{Binding UpdateCommand}" 
+                        Margin="15,0,5,0" Padding="15,0" Height="40" Background="#F8F9FA" BorderBrush="#E9ECEF"/>
+
+                <Button Content="Удалить" Command="{Binding DeleteCommand}" 
+                        Padding="15,0" Height="40" Foreground="#E74C3C" Background="#FFF5F5" BorderBrush="#FFE0E0"/>
+            </StackPanel>
+
+            <Button Grid.Column="1" Content="Новая группа" Command="{Binding AddCommand}"
+                    Background="#2D3436" Foreground="White" Padding="20,0" Height="40" FontWeight="SemiBold">
+                <Button.Resources>
+                    <Style TargetType="Border">
+                        <Setter Property="CornerRadius" Value="10"/>
+                    </Style>
+                </Button.Resources>
+            </Button>
+        </Grid>
+
+        <ListBox Grid.Row="2" 
+                 ItemsSource="{Binding ResponseTeams}" 
+                 SelectedItem="{Binding SelectedResponseTeam}"
+                 Background="Transparent" 
+                 BorderThickness="0" 
+                 HorizontalContentAlignment="Stretch">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Border Background="White" CornerRadius="15" Margin="0,0,0,12" Padding="20">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.05"/>
+                        </Border.Effect>
+                        <StackPanel>
+                            <TextBlock Text="{Binding NameTeam}" FontSize="18" FontWeight="Bold" Foreground="#2D3436"/>
+                            <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                                <TextBlock Text="Руководитель: " Foreground="#8B959E" FontSize="13"/>
+                                <TextBlock Foreground="#4A90E2" FontWeight="Medium" FontSize="13">
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat="{}{0} {1} {2}">
+                                            <Binding Path="DirectorLastName"/>
+                                            <Binding Path="DirectorFirstName"/>
+                                            <Binding Path="DirectorPatronymic"/>
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </StackPanel>
+                            <TextBlock Text="{Binding NumberOfPeople, StringFormat='Состав: {0} чел.'}" Foreground="#8B959E" Margin="0,2,0,0"/>
+                        </StackPanel>
+                    </Border>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </Grid>
+</Page>

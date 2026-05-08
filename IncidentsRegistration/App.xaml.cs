@@ -45,6 +45,8 @@ namespace IncidentsRegistration
             services.AddTransient<IncidentSubjectsViewModel>();
             services.AddTransient<AddSubjectViewModel>();
             services.AddTransient<SubjectDetailsViewModel>();
+            services.AddTransient<ResponseTeamsViewModel>();
+            services.AddTransient<ResponseTeamEditViewModel>();
 
             // Страницы
             services.AddTransient<LoginPage>();
@@ -57,6 +59,8 @@ namespace IncidentsRegistration
             services.AddTransient<IncidentSubjectsPage>();
             services.AddTransient<AddSubjectPage>();
             services.AddTransient<SubjectDetailsPage>();
+            services.AddTransient<ResponseTeamsPage>();
+            services.AddTransient<ResponseTeamEditPage>();
 
             return services.BuildServiceProvider();
         }
