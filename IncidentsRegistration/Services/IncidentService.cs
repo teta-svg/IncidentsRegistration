@@ -110,33 +110,23 @@ namespace IncidentsRegistration.Services
 
             if (incident == null) return;
 
-            if (incident.IncidentLocations.Any())
-            {
-                _context.IncidentLocations.RemoveRange(incident.IncidentLocations);
-            }
-
-            if (incident.SubjectRoles.Any())
-            {
-                _context.SubjectRoles.RemoveRange(incident.SubjectRoles);
-            }
+            _context.IncidentLocations.RemoveRange(incident.IncidentLocations);
+            _context.SubjectRoles.RemoveRange(incident.SubjectRoles);
 
             if (incident.Decision != null)
             {
                 if (incident.Decision.CriminalCase != null)
-                {
                     _context.CriminalCases.Remove(incident.Decision.CriminalCase);
-                }
 
                 if (incident.Decision.TerritorialTransfer != null)
-                {
                     _context.TerritorialTransfers.Remove(incident.Decision.TerritorialTransfer);
-                }
+
                 _context.Decisions.Remove(incident.Decision);
             }
+
             _context.Incidents.Remove(incident);
 
             _context.SaveChanges();
         }
-
     }
 }

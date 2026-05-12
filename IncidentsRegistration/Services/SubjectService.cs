@@ -34,13 +34,22 @@ public class SubjectService : ISubjectService
             .ToList();
     }
 
-    public void RemoveRole(int id)
+    public void RemoveRolesForPersonInIncident(int id)
     {
-        var role = _context.SubjectRoles.Find(id);
-        if (role != null)
+        var selectedRole = _context.SubjectRoles.Find(id);
+
+        if (selectedRole != null)
         {
-            _context.SubjectRoles.Remove(role);
-            _context.SaveChanges();
+            var allPersonRoles = _context.SubjectRoles
+                .Where(r => r.IdIncident == selectedRole.IdIncident
+                         && r.IdSubject == selectedRole.IdSubject)
+                .ToList();
+
+            if (allPersonRoles.Any())
+            {
+                _context.SubjectRoles.RemoveRange(allPersonRoles);
+                _context.SaveChanges();
+            }
         }
     }
 

@@ -1,0 +1,121 @@
+﻿<Page x:Class="IncidentsRegistration.Views.ActiveIncidentsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Title="Активные инциденты">
+
+    <Page.Resources>
+        <Style x:Key="IncidentItemStyle" TargetType="ListBoxItem">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Border x:Name="SelectionBorder" 
+                                Background="Transparent" 
+                                BorderBrush="Transparent" 
+                                BorderThickness="3" 
+                                Margin="0,0,0,12">
+                            <ContentPresenter/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="SelectionBorder" Property="BorderBrush" Value="{StaticResource SecondaryYellow}"/>
+                                <Setter TargetName="SelectionBorder" Property="Background" Value="#15FFFFFF"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Page.Resources>
+
+    <Grid>
+
+        <Grid Margin="24">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <StackPanel Grid.Row="0" Margin="0,0,0,25">
+                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                    <Border Background="{StaticResource SecondaryYellow}" Width="8" Height="30" Margin="0,0,15,0"/>
+                    <TextBlock Text="Активные инциденты" FontSize="28" FontWeight="Bold" Foreground="Black"/>
+                </StackPanel>
+            </StackPanel>
+
+            <ListBox Grid.Row="1"
+                     ItemsSource="{Binding ActiveIncidents}"
+                     SelectedItem="{Binding SelectedIncident}"
+                     Background="Transparent"
+                     BorderThickness="0"
+                     ItemContainerStyle="{StaticResource IncidentItemStyle}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Border Background="{StaticResource SecondaryBlue}"
+                                BorderBrush="{StaticResource PrimaryPink}"
+                                BorderThickness="2"
+                                Padding="18">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                    <Border Background="{StaticResource SecondaryYellow}" Padding="10,4">
+                                        <TextBlock Text="{Binding RegistrationTime, StringFormat=\{0:HH:mm\}}" 
+                                                   Foreground="Black" FontWeight="Bold"/>
+                                    </Border>
+                                    <TextBlock Text="{Binding RegistrationDate, StringFormat=\{0:dd.MM.yy\}}" 
+                                               Foreground="Black" FontSize="10" HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="1" Margin="20,0">
+                                    <TextBlock Text="{Binding TypeOfIncident}" 
+                                               FontWeight="Bold" Foreground="Black" FontSize="16"/>
+                                    <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                                        <TextBlock Text="ID: " Foreground="Black"/>
+                                        <TextBlock Text="{Binding IdIncident}" Foreground="Black" Margin="0,0,15,0"/>
+                                        <TextBlock Text="Команда: " Foreground="Black"/>
+                                        <TextBlock Text="{Binding IdResponseTeamNavigation.NameTeam}" 
+                                                   Foreground="Black" FontWeight="Bold"/>
+                                    </StackPanel>
+                                </StackPanel>
+
+                                <Border Grid.Column="2" Background="{StaticResource PrimaryPink}" 
+                                        Width="40" Height="4" VerticalAlignment="Center"/>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+            <TextBlock Text="{Binding ErrorMessage}"
+                           Foreground="{StaticResource PrimaryPink}"
+                           Background="{StaticResource SecondaryYellow}"
+                           FontSize="14"
+                           FontWeight="Bold"
+                           HorizontalAlignment="Center"
+                           TextWrapping="Wrap"
+                           Margin="0,0,0,20"/>
+
+            <Border Grid.Row="2" 
+                    Background="{StaticResource PrimaryGreen}" 
+                    BorderBrush="{StaticResource PrimaryPink}" 
+                    BorderThickness="2" Padding="12" Margin="0,15,0,0">
+                <Grid>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Content="ВЫНЕСТИ РЕШЕНИЕ" 
+                                Command="{Binding MakeDecisionCommand}" 
+                                Background="{StaticResource SecondaryYellow}" 
+                                Foreground="Black" Width="180" Height="40" 
+                                BorderThickness="2" BorderBrush="{StaticResource PrimaryPink}" 
+                                FontWeight="Bold"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</Page>

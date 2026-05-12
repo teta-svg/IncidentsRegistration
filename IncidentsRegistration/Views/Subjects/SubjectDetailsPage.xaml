@@ -1,0 +1,177 @@
+﻿<Page x:Class="IncidentsRegistration.Views.SubjectDetailsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      x:Name="DetailsPage"
+      mc:Ignorable="d" 
+      Background="Transparent" Title="Детальная информация">
+
+    <Page.Resources>
+        <Style x:Key="IncidentItemStyle" TargetType="ListBoxItem">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Border x:Name="SelectionBorder" 
+                                Background="Transparent" 
+                                BorderBrush="Transparent" 
+                                BorderThickness="3" 
+                                Margin="0,0,0,15">
+                            <ContentPresenter/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="SelectionBorder" Property="BorderBrush" Value="{StaticResource SecondaryYellow}"/>
+                                <Setter TargetName="SelectionBorder" Property="Background" Value="#15FFFFFF"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="ActionButtonStyle" TargetType="Button">
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Height" Value="35"/>
+            <Setter Property="Width" Value="110"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="BorderBrush" Value="{StaticResource PrimaryPink}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Page.Resources>
+
+    <Grid>
+
+        <Grid Margin="24">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <StackPanel Grid.Row="0" Margin="0,0,0,25">
+                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                    <Border Background="{StaticResource SecondaryYellow}" Width="8" Height="30" Margin="0,0,15,0"/>
+                    <TextBlock Text="Участники инцидента" FontSize="28" FontWeight="Bold" Foreground="Black"/>
+                </StackPanel>
+            </StackPanel>
+
+            <ListBox Grid.Row="1" 
+                     ItemsSource="{Binding UniqueParticipants}"
+                     Background="Transparent" 
+                     BorderThickness="0"
+                     HorizontalContentAlignment="Stretch"
+                     ItemContainerStyle="{StaticResource IncidentItemStyle}"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Border Background="{StaticResource SecondaryBlue}" BorderBrush="{StaticResource PrimaryPink}" BorderThickness="2" Padding="18">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="130"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="130"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Border Grid.Column="0" Background="{StaticResource PrimaryPink}" Padding="10,5" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                    <TextBlock Text="{Binding RoleName}" FontWeight="Bold" Foreground="Black" FontSize="11" HorizontalAlignment="Center"/>
+                                </Border>
+
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="20,0">
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                                        <TextBlock Text="{Binding IdSubjectNavigation.LastName}" FontSize="18" FontWeight="Bold" Foreground="Black"/>
+                                        <TextBlock Text="{Binding IdSubjectNavigation.FirstName}" FontSize="18" FontWeight="Bold" Foreground="Black" Margin="6,0"/>
+                                        <TextBlock Text="{Binding IdSubjectNavigation.Patronymic}" FontSize="18" FontWeight="Bold" Foreground="Black"/>
+                                    </StackPanel>
+                                    <TextBlock Text="АДРЕС:" FontSize="9" FontWeight="Bold" Foreground="Black" Opacity="0.6"/>
+                                    <TextBlock Foreground="Black" FontSize="13" FontWeight="Medium">
+                                        <Run Text="{Binding IdSubjectNavigation.Settlement}"/>, 
+                                        <Run Text="{Binding IdSubjectNavigation.Street}"/>, 
+                                        <Run Text="{Binding IdSubjectNavigation.House}"/>-<Run Text="{Binding IdSubjectNavigation.Room}"/>
+                                    </TextBlock>
+                                </StackPanel>
+
+                                <Border Grid.Column="2" VerticalAlignment="Center" Margin="0,0,20,0" 
+                                        Background="{StaticResource SecondaryYellow}" 
+                                        BorderBrush="{StaticResource PrimaryPink}" BorderThickness="2" Padding="15,8">
+                                    <StackPanel HorizontalAlignment="Center">
+                                        <TextBlock FontSize="20" FontWeight="Bold" Foreground="Black" HorizontalAlignment="Center">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Text" Value="{Binding IdSubjectNavigation.NumberOfConvictions}"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IdSubjectNavigation.NumberOfConvictions}" Value="0">
+                                                            <Setter Property="Text" Value="0"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding IdSubjectNavigation.NumberOfConvictions}" Value="{x:Null}">
+                                                            <Setter Property="Text" Value="0"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                        <TextBlock Text="СУДИМОСТЕЙ" FontSize="8" FontWeight="ExtraBold" Foreground="Black" HorizontalAlignment="Center"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <StackPanel Grid.Column="3" VerticalAlignment="Center">
+                                    <Button Content="ОБНОВИТЬ" 
+                                            Style="{StaticResource ActionButtonStyle}"
+                                            Background="{StaticResource SecondaryYellow}"
+                                            Foreground="Black"
+                                            Margin="0,0,0,8"
+                                            Command="{Binding DataContext.UpdateParticipantCommand, 
+                                        Source={x:Reference DetailsPage}}" 
+                                            CommandParameter="{Binding .}"/>
+
+                                    <Button Content="УДАЛИТЬ" 
+                                            Style="{StaticResource ActionButtonStyle}"
+                                            Background="{StaticResource PrimaryPink}"
+                                            Foreground="Black"
+                                            Command="{Binding DataContext.RemoveParticipantCommand, Source={x:Reference DetailsPage}}" 
+                                            CommandParameter="{Binding .}"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+            <TextBlock Text="{Binding ErrorMessage}"
+                           Foreground="{StaticResource PrimaryPink}"
+                           Background="{StaticResource SecondaryYellow}"
+                           FontSize="14"
+                           FontWeight="Bold"
+                           HorizontalAlignment="Center"
+                           TextWrapping="Wrap"
+                           Margin="0,0,0,20"/>
+
+            <Border Grid.Row="2" Background="{StaticResource PrimaryGreen}" 
+                    BorderBrush="{StaticResource PrimaryPink}" 
+                    BorderThickness="2" Padding="12" Margin="0,15,0,0">
+                <Grid>
+                    <TextBlock Text="Просмотр детальных сведений" 
+                               VerticalAlignment="Center" Foreground="Black" FontWeight="Bold"/>
+                    <Button Content="ВЕРНУТЬСЯ К ИНЦИДЕНТАМ" Click="Back_Click" 
+                            HorizontalAlignment="Right" Background="{StaticResource SecondaryBlue}" 
+                            Foreground="Black" FontWeight="Bold" Width="220" Height="40"
+                            BorderThickness="2" BorderBrush="{StaticResource PrimaryPink}" Cursor="Hand"/>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</Page>

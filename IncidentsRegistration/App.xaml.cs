@@ -22,8 +22,8 @@ namespace IncidentsRegistration
         {
             var services = new ServiceCollection();
 
-            services.AddDbContext<IncidentsDbContext>(options =>
-                options.UseSqlServer("Server=.\\SQLEXPRESS;Database=Incidents_registration;Trusted_Connection=True;TrustServerCertificate=True;"));
+            services.AddDbContextFactory<IncidentsDbContext>(options =>
+                            options.UseSqlServer("Server=.\\SQLEXPRESS;Database=Incidents_registration;Trusted_Connection=True;TrustServerCertificate=True;"));
 
             // Сервисы
             services.AddScoped<IAuthService, AuthService>();
@@ -33,6 +33,7 @@ namespace IncidentsRegistration
             services.AddScoped<ISubjectService, SubjectService>();
             services.AddTransient<IExportService, ExportService>();
             services.AddTransient<IDecisionService, DecisionService>();
+            services.AddScoped<IUserService, UserService>();
 
             // ViewModels
             services.AddTransient<LoginViewModel>();
@@ -42,11 +43,14 @@ namespace IncidentsRegistration
             services.AddTransient<AddIncidentViewModel>();
             services.AddTransient<ActiveIncidentsViewModel>();
             services.AddTransient<AddDecisionViewModel>();
-            services.AddTransient<IncidentSubjectsViewModel>();
             services.AddTransient<AddSubjectViewModel>();
             services.AddTransient<SubjectDetailsViewModel>();
             services.AddTransient<ResponseTeamsViewModel>();
             services.AddTransient<ResponseTeamEditViewModel>();
+            services.AddTransient<UsersViewModel>();
+            services.AddTransient<UserEditViewModel>();
+            services.AddTransient<IncidentDetailsViewModel>();
+            services.AddTransient<IncidentSubjectsViewModel>();
 
             // Страницы
             services.AddTransient<LoginPage>();
@@ -61,17 +65,19 @@ namespace IncidentsRegistration
             services.AddTransient<SubjectDetailsPage>();
             services.AddTransient<ResponseTeamsPage>();
             services.AddTransient<ResponseTeamEditPage>();
+            services.AddTransient<UsersPage>();
+            services.AddTransient<UserEditPage>();
+            services.AddTransient<IncidentSubjectsPage>();
+            services.AddTransient<IncidentDetailsPage>();
 
             return services.BuildServiceProvider();
         }
-
-
 
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
 
-            var loginPage = ((App)Current).Services.GetRequiredService<LoginPage>();
+            var loginPage = Services.GetRequiredService<LoginPage>();
             var mainWindow = new MainWindow();
             mainWindow.MainFrame.Navigate(loginPage);
             mainWindow.Show();

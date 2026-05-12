@@ -6,7 +6,7 @@ namespace IncidentsRegistration.Interfaces
     {
         void AddSubjectAndLinkToIncident(Subject subject, SubjectRole role);
         List<SubjectRole> GetParticipantsByIncident(int incidentId);
-        void RemoveRole(int id);
+        void RemoveRolesForPersonInIncident(int id);
         void UpdateSubjectAndRole(Subject updatedSubject, int incidentId, string roleName);
     }
 

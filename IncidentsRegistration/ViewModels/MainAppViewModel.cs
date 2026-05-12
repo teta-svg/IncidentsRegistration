@@ -18,21 +18,24 @@ namespace IncidentsRegistration.ViewModels
         private string _role;
 
         public MainAppViewModel(
-            SystemUser user,
-            string role,
+            IUserService userService,
+            IAuthService authService,
             IIncidentService incidentService,
             IExportService exportService)
         {
-            CurrentUser = user;
-            Role = role?.Trim().ToLower();
             _incidentService = incidentService;
             _exportService = exportService;
+
+            CurrentUser = userService.CurrentUser;
+
+            if (CurrentUser != null)
+            {
+                Role = authService.GetRole(CurrentUser)?.Trim().ToLower();
+            }
         }
 
         public bool CanSeeAllIncidents => true;
-
         public bool CanSeeOperational => Role == "администратор" || Role == "руководитель группы";
-
         public bool IsLead => Role == "руководитель группы";
         public bool IsAdmin => Role == "администратор";
 
@@ -59,12 +62,12 @@ namespace IncidentsRegistration.ViewModels
                 {
                     _exportService.ExportAllIncidentsToExcel(allIncidents, sfd.FileName);
 
-                    MessageBox.Show("Отчет успешно выгружен!");
+                    MessageBox.Show("Отчет успешно создан!");
 
                     System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(sfd.FileName)
                     {
                         UseShellExecute = true
-                    });
+                    });//открыть файл после сохранения
                 }
             }
             catch (Exception ex)

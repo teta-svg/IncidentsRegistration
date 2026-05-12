@@ -6,7 +6,7 @@
         MinHeight="600" MinWidth="900"
         WindowStartupLocation="CenterScreen">
 
-    <Grid Background="{StaticResource SecondaryBlue}">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>

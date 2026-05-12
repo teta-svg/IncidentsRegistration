@@ -1,6 +1,4 @@
-﻿using IncidentsRegistration.Data;
-using IncidentsRegistration.Services;
-using IncidentsRegistration.ViewModels;
+﻿using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
 
 namespace IncidentsRegistration.Views
@@ -11,21 +9,10 @@ namespace IncidentsRegistration.Views
         {
             InitializeComponent();
 
-            var dbContext = new IncidentsDbContext();
+            var scope = ((App)Application.Current).Services;
+            var loginPage = scope.GetRequiredService<LoginPage>();
 
-            var authService = new AuthService(dbContext);
-            var incidentService = new IncidentService(dbContext);
-
-            var exportService = new ExportService();
-
-            MainFrame.Navigate(
-                new LoginPage(
-                    new LoginViewModel(authService),
-                    new RegisterViewModel(authService),
-                    incidentService,
-                    exportService
-                )
-            );
+            MainFrame.Navigate(loginPage);
         }
     }
 }

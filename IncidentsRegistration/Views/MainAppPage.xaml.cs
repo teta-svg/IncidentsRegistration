@@ -1,5 +1,4 @@
-﻿using IncidentsRegistration.Interfaces;
-using IncidentsRegistration.ViewModels;
+﻿using IncidentsRegistration.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
 using System.Windows.Controls;
@@ -9,83 +8,65 @@ namespace IncidentsRegistration.Views
     public partial class MainAppPage : Page
     {
         private readonly MainAppViewModel _vm;
+        private readonly IServiceProvider _serviceProvider;
 
-        public MainAppPage(MainAppViewModel vm)
+        public MainAppPage(MainAppViewModel vm, IServiceProvider serviceProvider)
         {
             InitializeComponent();
             _vm = vm;
+            _serviceProvider = serviceProvider;
             DataContext = _vm;
 
             Loaded += (s, e) =>
             {
-                string currentRole = _vm.Role?.ToLower().Trim();
-
-                if (currentRole == "руководитель группы")
-                {
-                    OpenActiveIncidents();
-                }
+                if (_vm.Role == "руководитель группы")
+                    NavigateToActiveIncidents();
                 else
-                {
-                    OpenAllIncidents();
-                }
+                    NavigateToIncidents();
             };
         }
 
-        private T GetService<T>() where T : class
-            => ((App)Application.Current).Services.GetService<T>();
 
-        private void OpenActiveIncidents()
+        private void NavigateToIncidents()
         {
-            var incidentService = GetService<IIncidentService>();
-            var activeVm = new ActiveIncidentsViewModel(incidentService, _vm.CurrentUser);
-            MainFrame.Navigate(new ActiveIncidentsPage(activeVm));
+            var page = _serviceProvider.GetRequiredService<IncidentsPage>();
+            MainFrame.Navigate(page);
         }
 
-        private void OpenAllIncidents()
+        private void NavigateToActiveIncidents()
         {
-            var incidentsVm = GetService<IncidentsViewModel>();
-            if (incidentsVm != null)
-                MainFrame.Navigate(new IncidentsPage(incidentsVm));
+            var page = _serviceProvider.GetRequiredService<ActiveIncidentsPage>();
+
+            page.Initialize(_vm.CurrentUser);
+
+            MainFrame.Navigate(page);
         }
 
-        private void Incidents_Click(object sender, RoutedEventArgs e) => OpenAllIncidents();
+        private void Incidents_Click(object sender, RoutedEventArgs e) => NavigateToIncidents();
 
-        private void ActiveIncidents_Click(object sender, RoutedEventArgs e) => OpenActiveIncidents();
+        private void ActiveIncidents_Click(object sender, RoutedEventArgs e) => NavigateToActiveIncidents();
 
         private void Subjects_Click(object sender, RoutedEventArgs e)
         {
-            var subjectService = ((App)Application.Current).Services.GetRequiredService<ISubjectService>();
-            var incidentService = ((App)Application.Current).Services.GetRequiredService<IIncidentService>();
-            var vm = new IncidentSubjectsViewModel(incidentService, subjectService, _vm.CurrentUser);
-
-
-            MainFrame.Navigate(new IncidentSubjectsPage(vm));
+            var page = _serviceProvider.GetRequiredService<IncidentSubjectsPage>();
+            page.Initialize(_vm.CurrentUser);
+            MainFrame.Navigate(page);
         }
+
 
         private void Teams_Click(object sender, RoutedEventArgs e)
-        {
-            var teamsPage = ((App)Application.Current).Services.GetRequiredService<ResponseTeamsPage>();
-
-            MainFrame.Navigate(teamsPage);
-        }
-
-
+            => MainFrame.Navigate(_serviceProvider.GetRequiredService<ResponseTeamsPage>());
 
         private void Users_Click(object sender, RoutedEventArgs e)
-        {
-            // MainFrame.Navigate(new UsersManagementPage());
-        }
+            => MainFrame.Navigate(_serviceProvider.GetRequiredService<UsersPage>());
 
         private void Logout_Click(object sender, RoutedEventArgs e)
         {
-            var result = MessageBox.Show("Вы уверены, что хотите выйти?", "Выход",
-                                        MessageBoxButton.YesNo, MessageBoxImage.Question);
-
-            if (result == MessageBoxResult.Yes)
+            if (MessageBox.Show("Вы уверены, что хотите выйти?", "Выход",
+                MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
             {
-                var services = ((App)Application.Current).Services;
-                var loginPage = services.GetRequiredService<LoginPage>();
-                System.Windows.Navigation.NavigationService.GetNavigationService(this).Navigate(loginPage);
+                var loginPage = _serviceProvider.GetRequiredService<LoginPage>();
+                NavigationService.Navigate(loginPage);
             }
         }
     }
