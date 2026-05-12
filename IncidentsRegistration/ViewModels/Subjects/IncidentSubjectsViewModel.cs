@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using IncidentsRegistration.Interfaces;
 using IncidentsRegistration.Models;
 using System.Collections.ObjectModel;
+using System.Windows;
 
 namespace IncidentsRegistration.ViewModels
 {
@@ -10,90 +11,57 @@ namespace IncidentsRegistration.ViewModels
     {
         private readonly IIncidentService _incidentService;
         private readonly ISubjectService _subjectService;
+        private readonly SystemUser _currentUser;
 
-        [ObservableProperty]
-        private SystemUser? _currentUser;
-
-        public ObservableCollection<Incident> Incidents { get; } = new();
-        public ObservableCollection<SubjectRole> Participants { get; } = new();
-
-        [ObservableProperty]
-        private Incident? _selectedIncident;
-
-        [ObservableProperty]
-        private string? _errorMessage;
+        [ObservableProperty] private ObservableCollection<Incident> _incidents;
+        [ObservableProperty] private Incident? _selectedIncident;
+        [ObservableProperty] private ObservableCollection<SubjectRole> _participants;
 
         public Action<int>? OnAddParticipantRequested;
         public Action<Incident>? OnShowDetailsRequested;
+        public Action<int, Subject>? OnUpdateParticipantRequested;
 
-        public IncidentSubjectsViewModel(
-            IIncidentService service,
-            ISubjectService subjectService)
+        public IncidentSubjectsViewModel(IIncidentService service, ISubjectService subjectService, SystemUser user)
         {
             _incidentService = service;
             _subjectService = subjectService;
-        }
-
-        public void Initialize(SystemUser user)
-        {
-            CurrentUser = user;
+            _currentUser = user;
             LoadData();
         }
 
-        [RelayCommand]
         public void LoadData()
         {
-            ErrorMessage = string.Empty;
-
-            try
+            var teamLink = _currentUser.SystemUserResponseTeams.FirstOrDefault();
+            if (teamLink != null)
             {
-                Incidents.Clear();
-                Participants.Clear();
-
-                if (CurrentUser == null)
-                    return;
-
-                var teamLink = CurrentUser.SystemUserResponseTeams.FirstOrDefault();
-
-                if (teamLink == null)
-                {
-                    ErrorMessage = "Вы не привязаны к группе реагирования.";
-                    return;
-                }
-
                 var data = _incidentService.GetAll()
                     .Where(i => i.IdResponseTeam == teamLink.IdResponseTeam)
                     .ToList();
 
                 foreach (var incident in data)
                 {
-                    Incidents.Add(incident);
+                    if (incident.SubjectRoles != null)
+                    {
+                        incident.SubjectRoles = incident.SubjectRoles
+                            .GroupBy(sr => sr.IdSubject)
+                            .Select(g => g
+                                .OrderByDescending(sr => sr.DateOfInvolvement)
+                                .ThenByDescending(sr => sr.IdSubjectRole)
+                                .First())
+                            .ToList();
+                    }
                 }
 
-                if (Incidents.Count == 0)
-                {
-                    ErrorMessage = "Инцидентов вашей группы не найдено.";
-                }
-            }
-            catch (Exception ex)
-            {
-                ErrorMessage = "Ошибка загрузки: "
-                    + (ex.InnerException?.Message ?? ex.Message);
+                Incidents = new ObservableCollection<Incident>(data);
             }
         }
 
+
         partial void OnSelectedIncidentChanged(Incident? value)
         {
-            Participants.Clear();
-            ErrorMessage = string.Empty;
-
-            if (value == null)
-                return;
-
-            try
+            if (value != null)
             {
-                var allRoles = _subjectService
-                    .GetParticipantsByIncident(value.IdIncident);
+                var allRoles = _subjectService.GetParticipantsByIncident(value.IdIncident);
 
                 var latestParticipants = allRoles
                     .GroupBy(r => r.IdSubject)
@@ -103,30 +71,20 @@ namespace IncidentsRegistration.ViewModels
                         .First())
                     .ToList();
 
-                foreach (var participant in latestParticipants)
-                {
-                    Participants.Add(participant);
-                }
-
-                if (!Participants.Any())
-                {
-                    ErrorMessage = "У данного инцидента пока нет участников.";
-                }
+                Participants = new ObservableCollection<SubjectRole>(latestParticipants);
             }
-            catch (Exception ex)
+            else
             {
-                ErrorMessage = "Ошибка загрузки участников: "
-                    + (ex.InnerException?.Message ?? ex.Message);
+                Participants = new ObservableCollection<SubjectRole>();
             }
         }
 
         [RelayCommand]
         private void ShowSubjectDetails()
         {
-            ErrorMessage = string.Empty;
             if (SelectedIncident == null)
             {
-                ErrorMessage = "Выберите инцидент в списке!";
+                MessageBox.Show("Выберите инцидент!");
                 return;
             }
             OnShowDetailsRequested?.Invoke(SelectedIncident);
@@ -135,12 +93,7 @@ namespace IncidentsRegistration.ViewModels
         [RelayCommand]
         private void AddParticipant()
         {
-            ErrorMessage = string.Empty;
-            if (SelectedIncident == null)
-            {
-                ErrorMessage = "Сначала выберите инцидент, к которому добавить участника";
-                return;
-            }
+            if (SelectedIncident == null) return;
             OnAddParticipantRequested?.Invoke(SelectedIncident.IdIncident);
         }
     }

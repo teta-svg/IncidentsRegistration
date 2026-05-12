@@ -1,29 +1,33 @@
-﻿using IncidentsRegistration.Interfaces;
-using IncidentsRegistration.Models;
+﻿using IncidentsRegistration.Models;
 using IncidentsRegistration.ViewModels;
-using Microsoft.Extensions.DependencyInjection;
-using System.Windows;
 using System.Windows.Controls;
 
 namespace IncidentsRegistration.Views
 {
     public partial class UserEditPage : Page
     {
-        public UserEditPage(SystemUser? user)
+        private readonly UserEditViewModel _vm;
+
+        public UserEditPage(UserEditViewModel vm)
         {
             InitializeComponent();
 
-            var userService = ((App)Application.Current).Services.GetRequiredService<IUserService>();
-            var viewModel = new UserEditViewModel(userService, user);
+            _vm = vm;
 
-            viewModel.OnRequestGoBack = () =>
+            DataContext = _vm;
+
+            _vm.OnRequestGoBack = () =>
             {
                 if (NavigationService.CanGoBack)
+                {
                     NavigationService.GoBack();
+                }
             };
-
-            DataContext = viewModel;
         }
 
+        public void Initialize(SystemUser? user = null)
+        {
+            _vm.Initialize(user);
+        }
     }
 }

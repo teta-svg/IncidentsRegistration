@@ -34,6 +34,7 @@ namespace IncidentsRegistration
             services.AddTransient<IExportService, ExportService>();
             services.AddTransient<IDecisionService, DecisionService>();
             services.AddScoped<IUserService, UserService>();
+            services.AddSingleton<INavigationService, NavigationService>();
 
             // ViewModels
             services.AddTransient<LoginViewModel>();

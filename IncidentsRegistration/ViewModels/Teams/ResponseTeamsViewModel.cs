@@ -10,6 +10,7 @@ namespace IncidentsRegistration.ViewModels
     public partial class ResponseTeamsViewModel : ObservableObject
     {
         private readonly IResponseTeamService _teamService;
+
         private List<ResponseTeam> _allTeamsBuffer = new();
 
         public ObservableCollection<ResponseTeam> ResponseTeams { get; } = new();
@@ -22,6 +23,9 @@ namespace IncidentsRegistration.ViewModels
 
         [ObservableProperty]
         private string searchText = string.Empty;
+
+        [ObservableProperty]
+        private string errorMessage = string.Empty;
 
         partial void OnSearchTextChanged(string value)
         {
@@ -36,8 +40,24 @@ namespace IncidentsRegistration.ViewModels
         [RelayCommand]
         public void LoadData()
         {
-            _allTeamsBuffer = _teamService.GetAllTeams();
-            ApplyFilter();
+            ErrorMessage = string.Empty;
+
+            try
+            {
+                _allTeamsBuffer = _teamService.GetAllTeams();
+
+                ApplyFilter();
+
+                if (ResponseTeams.Count == 0)
+                {
+                    ErrorMessage = "Группы не найдены";
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage =
+                    ex.InnerException?.Message ?? ex.Message;
+            }
         }
 
         private void ApplyFilter()
@@ -46,8 +66,16 @@ namespace IncidentsRegistration.ViewModels
 
             var filtered = _allTeamsBuffer.Where(t =>
                 string.IsNullOrWhiteSpace(SearchText) ||
-                t.NameTeam.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
-                t.DirectorLastName.Contains(SearchText, StringComparison.OrdinalIgnoreCase)
+
+                (t.NameTeam?.Contains(
+                    SearchText,
+                    StringComparison.OrdinalIgnoreCase) ?? false)
+
+                ||
+
+                (t.DirectorLastName?.Contains(
+                    SearchText,
+                    StringComparison.OrdinalIgnoreCase) ?? false)
             );
 
             foreach (var team in filtered)
@@ -57,34 +85,58 @@ namespace IncidentsRegistration.ViewModels
         }
 
         [RelayCommand]
-        private void Add() => OnAddRequested?.Invoke();
+        private void Add()
+        {
+            OnAddRequested?.Invoke();
+        }
 
         [RelayCommand]
         private void Update()
         {
-            if (SelectedResponseTeam != null)
-                OnUpdateRequested?.Invoke(SelectedResponseTeam);
-            else
-                MessageBox.Show("Выберите группу в списке");
+            ErrorMessage = string.Empty;
+
+            if (SelectedResponseTeam == null)
+            {
+                ErrorMessage = "Выберите группу";
+                return;
+            }
+
+            OnUpdateRequested?.Invoke(SelectedResponseTeam);
         }
 
         [RelayCommand]
         private void Delete()
         {
-            if (SelectedResponseTeam == null) return;
+            ErrorMessage = string.Empty;
 
-            if (MessageBox.Show($"Удалить группу «{SelectedResponseTeam.NameTeam}»?", "Удаление",
-                MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+            if (SelectedResponseTeam == null)
             {
-                try
-                {
-                    _teamService.DeleteTeam(SelectedResponseTeam.IdResponseTeam);
-                    LoadData();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
-                }
+                ErrorMessage = "Выберите группу";
+                return;
+            }
+
+            var result = MessageBox.Show(
+                $"Удалить группу «{SelectedResponseTeam.NameTeam}»?",
+                "Подтверждение удаления",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning);
+
+            if (result != MessageBoxResult.Yes)
+                return;
+
+            try
+            {
+                _teamService.DeleteTeam(
+                    SelectedResponseTeam.IdResponseTeam);
+
+                LoadData();
+
+                ErrorMessage = "Группа удалена";
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage =
+                    ex.InnerException?.Message ?? ex.Message;
             }
         }
     }

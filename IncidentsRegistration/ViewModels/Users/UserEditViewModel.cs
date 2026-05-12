@@ -11,23 +11,55 @@ namespace IncidentsRegistration.ViewModels
     {
         private readonly IUserService _userService;
 
-        [ObservableProperty] private SystemUser _currentUser;
-        [ObservableProperty] private string _pageHeader;
-        [ObservableProperty] private ObservableCollection<ResponseTeam> _teams;
-        [ObservableProperty] private ResponseTeam? _selectedTeam;
-        [ObservableProperty] private Visibility _teamSelectionVisibility = Visibility.Collapsed;
+        [ObservableProperty]
+        private SystemUser currentUser = new();
 
-        public List<string> Roles { get; } = new() { "администратор", "диспетчер", "руководитель группы" };
+        [ObservableProperty]
+        private string pageHeader = string.Empty;
+
+        [ObservableProperty]
+        private ObservableCollection<ResponseTeam> teams = new();
+
+        [ObservableProperty]
+        private ResponseTeam? selectedTeam;
+
+        [ObservableProperty]
+        private Visibility teamSelectionVisibility = Visibility.Collapsed;
+
+        [ObservableProperty]
+        private string errorMessage = string.Empty;
+
+        [ObservableProperty]
+        private string selectedRole = string.Empty;
+
+        public List<string> Roles { get; } = new()
+        {
+            "администратор",
+            "диспетчер",
+            "руководитель группы"
+        };
+
         public Action? OnRequestGoBack;
 
-        public UserEditViewModel(IUserService userService, SystemUser? user = null)
+        public UserEditViewModel(IUserService userService)
         {
             _userService = userService;
-            Teams = new ObservableCollection<ResponseTeam>(_userService.GetAllTeams());
+
+            Teams = new ObservableCollection<ResponseTeam>(
+                _userService.GetAllTeams());
+        }
+
+        public void Initialize(SystemUser? user = null)
+        {
+            ErrorMessage = string.Empty;
 
             if (user == null)
             {
-                CurrentUser = new SystemUser { UserRole = "диспетчер" };
+                CurrentUser = new SystemUser
+                {
+                    UserRole = "диспетчер"
+                };
+
                 PageHeader = "Новый пользователь";
             }
             else
@@ -39,53 +71,96 @@ namespace IncidentsRegistration.ViewModels
                     UserPassword = user.UserPassword,
                     UserRole = user.UserRole
                 };
+
                 PageHeader = "Редактирование";
 
-                var linkedTeamId = user.SystemUserResponseTeams.FirstOrDefault()?.IdResponseTeam;
+                var linkedTeamId = user
+                    .SystemUserResponseTeams
+                    .FirstOrDefault()
+                    ?.IdResponseTeam;
+
                 if (linkedTeamId != null)
                 {
-                    SelectedTeam = Teams.FirstOrDefault(t => t.IdResponseTeam == linkedTeamId);
+                    SelectedTeam = Teams.FirstOrDefault(
+                        t => t.IdResponseTeam == linkedTeamId);
                 }
             }
+
+            SelectedRole = CurrentUser.UserRole;
+
             UpdateVisibility();
         }
 
-        partial void OnCurrentUserChanged(SystemUser value) => UpdateVisibility();
+        partial void OnSelectedRoleChanged(string value)
+        {
+            CurrentUser.UserRole = value;
+            UpdateVisibility();
+        }
 
         [RelayCommand]
         private void Save()
         {
-            if (CurrentUser.UserRole == "руководитель группы" && SelectedTeam == null)
+            ErrorMessage = string.Empty;
+
+            try
             {
-                MessageBox.Show("Выберите группу для руководителя");
-                return;
+                if (string.IsNullOrWhiteSpace(CurrentUser.LoginName))
+                {
+                    ErrorMessage = "Введите логин";
+                    return;
+                }
+
+                if (string.IsNullOrWhiteSpace(CurrentUser.UserPassword))
+                {
+                    ErrorMessage = "Введите пароль";
+                    return;
+                }
+
+                if (CurrentUser.UserRole == "руководитель группы"
+                    && SelectedTeam == null)
+                {
+                    ErrorMessage = "Выберите группу";
+                    return;
+                }
+
+                if (CurrentUser.IdUser == 0)
+                {
+                    _userService.AddUser(
+                        CurrentUser,
+                        SelectedTeam?.IdResponseTeam);
+
+                    ErrorMessage = "Пользователь создан";
+                }
+                else
+                {
+                    _userService.UpdateUser(
+                        CurrentUser,
+                        SelectedTeam?.IdResponseTeam);
+
+                    ErrorMessage = "Данные обновлены";
+                }
+
+                OnRequestGoBack?.Invoke();
             }
+            catch (Exception ex)
+            {
+                ErrorMessage =
+                    ex.InnerException?.Message ?? ex.Message;
+            }
+        }
 
-            if (CurrentUser.IdUser == 0)
-                _userService.AddUser(CurrentUser, SelectedTeam?.IdResponseTeam);
-            else
-                _userService.UpdateUser(CurrentUser, SelectedTeam?.IdResponseTeam);
-
+        [RelayCommand]
+        private void Back()
+        {
             OnRequestGoBack?.Invoke();
         }
 
-        [RelayCommand] private void Back() => OnRequestGoBack?.Invoke();
-
         private void UpdateVisibility()
         {
-            TeamSelectionVisibility = CurrentUser?.UserRole == "руководитель группы"
-                ? Visibility.Visible
-                : Visibility.Collapsed;
-        }
-        public string SelectedRole
-        {
-            get => CurrentUser.UserRole;
-            set
-            {
-                CurrentUser.UserRole = value;
-                OnPropertyChanged();
-                UpdateVisibility();
-            }
+            TeamSelectionVisibility =
+                CurrentUser.UserRole == "руководитель группы"
+                    ? Visibility.Visible
+                    : Visibility.Collapsed;
         }
     }
 }

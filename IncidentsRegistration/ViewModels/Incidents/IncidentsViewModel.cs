@@ -22,10 +22,10 @@ namespace IncidentsRegistration.ViewModels
         private Incident? selectedIncident;
 
         [ObservableProperty]
-        private string role;
+        private string role = string.Empty;
 
         [ObservableProperty]
-        private string errorMessage;
+        private string errorMessage = string.Empty;
 
         public IncidentsViewModel(
             IIncidentService incidentService,
@@ -34,74 +34,126 @@ namespace IncidentsRegistration.ViewModels
             _incidentService = incidentService;
             _userService = userService;
 
-            if (_userService.CurrentUser != null)
+            var currentUser = _userService.CurrentUser;
+
+            if (currentUser != null)
             {
-                Role = _userService.CurrentUser.UserRole?.ToLower().Trim();
+                Role = currentUser.UserRole?
+                    .ToLower()
+                    .Trim() ?? string.Empty;
             }
         }
 
-        public bool CanEdit => Role == "администратор" || Role == "руководитель группы";
-        public bool CanDelete => Role == "администратор";
+        public bool CanEdit =>
+            Role == "администратор" ||
+            Role == "руководитель группы";
 
+        public bool CanDelete =>
+            Role == "администратор";
 
         [RelayCommand]
         public void LoadData()
         {
-            Incidents.Clear();
-            var data = _incidentService.GetAll();
-            foreach (var incident in data)
-                Incidents.Add(incident);
+            ErrorMessage = string.Empty;
+
+            try
+            {
+                Incidents.Clear();
+
+                var data = _incidentService.GetAll();
+
+                foreach (var incident in data)
+                {
+                    Incidents.Add(incident);
+                }
+
+                if (Incidents.Count == 0)
+                {
+                    ErrorMessage = "Инциденты не найдены";
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage =
+                    ex.InnerException?.Message ?? ex.Message;
+            }
         }
 
         [RelayCommand]
         private void Details()
         {
-            if (SelectedIncident != null)
-                OnShowDetailsRequested?.Invoke(SelectedIncident);
-            else
-                MessageBox.Show("Выберите инцидент из списка для просмотра деталей.");
+            ErrorMessage = string.Empty;
+
+            if (SelectedIncident == null)
+            {
+                ErrorMessage =
+                    "Выберите инцидент для просмотра";
+                return;
+            }
+
+            OnShowDetailsRequested?.Invoke(
+                SelectedIncident);
         }
 
         [RelayCommand]
-        private void Add() =>
+        private void Add()
+        {
+            ErrorMessage = string.Empty;
+
             OnAddRequested?.Invoke();
+        }
 
         [RelayCommand]
         private void Update()
         {
-            if (SelectedIncident != null)
-                OnUpdateRequested?.Invoke(SelectedIncident);
-            else
-                MessageBox.Show("Выберите инцидент для редактирования");
+            ErrorMessage = string.Empty;
+
+            if (SelectedIncident == null)
+            {
+                ErrorMessage =
+                    "Выберите инцидент для редактирования";
+                return;
+            }
+
+            OnUpdateRequested?.Invoke(
+                SelectedIncident);
         }
 
         [RelayCommand]
         private void Delete()
         {
+            ErrorMessage = string.Empty;
+
             if (SelectedIncident == null)
             {
-                ErrorMessage = "Сначала выберите инцидент!";
+                ErrorMessage =
+                    "Сначала выберите инцидент";
                 return;
             }
 
             var result = MessageBox.Show(
                 $"Удалить инцидент №{SelectedIncident.IdIncident}?",
-                "Подтверждение",
+                "Подтверждение удаления",
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Warning);
 
-            if (result == MessageBoxResult.Yes)
+            if (result != MessageBoxResult.Yes)
+                return;
+
+            try
             {
-                try
-                {
-                    _incidentService.DeleteIncident(SelectedIncident.IdIncident);
-                    LoadData();
-                    ErrorMessage = "Запись удалена успешно";
-                }
-                catch (Exception ex)
-                {
-                    ErrorMessage = $"Не удалось удалить: {ex.Message}";
-                }
+                _incidentService.DeleteIncident(
+                    SelectedIncident.IdIncident);
+
+                LoadData();
+
+                ErrorMessage =
+                    "Инцидент успешно удалён";
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage =
+                    ex.InnerException?.Message ?? ex.Message;
             }
         }
     }

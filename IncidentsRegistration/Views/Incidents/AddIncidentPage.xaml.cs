@@ -1,7 +1,6 @@
 ﻿using IncidentsRegistration.ViewModels;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Navigation;
 
 namespace IncidentsRegistration.Views
 {
@@ -12,7 +11,9 @@ namespace IncidentsRegistration.Views
         public AddIncidentPage(AddIncidentViewModel vm)
         {
             InitializeComponent();
+
             _vm = vm;
+
             DataContext = _vm;
         }
 
@@ -20,12 +21,22 @@ namespace IncidentsRegistration.Views
         {
             _vm.SaveCommand.Execute(null);
 
-            if (NavigationService.CanGoBack) NavigationService.GoBack();
+            if (string.IsNullOrWhiteSpace(_vm.ErrorMessage) ||
+                _vm.ErrorMessage.Contains("успешно"))
+            {
+                if (NavigationService.CanGoBack)
+                {
+                    NavigationService.GoBack();
+                }
+            }
         }
 
         private void Back_Click(object sender, RoutedEventArgs e)
         {
-            if (NavigationService.CanGoBack) NavigationService.GoBack();
+            if (NavigationService.CanGoBack)
+            {
+                NavigationService.GoBack();
+            }
         }
     }
 }

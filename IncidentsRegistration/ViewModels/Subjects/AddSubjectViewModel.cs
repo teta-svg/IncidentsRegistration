@@ -2,116 +2,82 @@
 using CommunityToolkit.Mvvm.Input;
 using IncidentsRegistration.Interfaces;
 using IncidentsRegistration.Models;
+using System.Windows;
 
-namespace IncidentsRegistration.ViewModels
+public partial class AddSubjectViewModel : ObservableObject
 {
-    public partial class AddSubjectViewModel : ObservableValidator
+    private readonly ISubjectService _subjectService;
+    private readonly int _incidentId;
+    private readonly bool _isEditMode;
+
+    public Action? OnSuccess;
+
+    [ObservableProperty] private Subject _currentSubject;
+    [ObservableProperty] private string? _selectedRole;
+
+    public List<string> Roles { get; } = new() { "Потерпевший", "Свидетель", "Заявитель", "Подозреваемый" };
+
+    public Visibility RoleSelectionVisibility => Visibility.Visible;
+
+    public string ButtonText => _isEditMode ? "СОХРАНИТЬ ИЗМЕНЕНИЯ" : "ЗАРЕГИСТРИРОВАТЬ";
+
+    public AddSubjectViewModel(ISubjectService service, int incidentId, Subject? subjectToEdit = null)
     {
-        private readonly ISubjectService _subjectService;
-        private int _incidentId;
-        private bool _isEditMode;
+        _subjectService = service;
+        _incidentId = incidentId;
 
-        public Action? OnSuccess;
-
-        [ObservableProperty] 
-        private Subject _currentSubject = new();
-
-        [ObservableProperty] 
-        private string? _selectedRole;
-
-        [ObservableProperty] 
-        private string? _errorMessage;
-
-        [ObservableProperty]
-        private int? _convictionsCount;
-
-        public List<string> Roles { get; } = new() 
-        { 
-            "Потерпевший", 
-            "Свидетель", 
-            "Заявитель", 
-            "Подозреваемый" };
-        public string ButtonText => _isEditMode ? "СОХРАНИТЬ ИЗМЕНЕНИЯ" : "ЗАРЕГИСТРИРОВАТЬ";
-
-        public AddSubjectViewModel(ISubjectService service)
+        if (subjectToEdit != null)
         {
-            _subjectService = service;
+            _currentSubject = subjectToEdit;
+            _isEditMode = true;
+            SelectedRole = "Подозреваемый";
+        }
+        else
+        {
+            _currentSubject = new Subject();
+            _isEditMode = false;
+        }
+    }
+
+    [RelayCommand]
+    private void Save()
+    {
+        if (string.IsNullOrWhiteSpace(CurrentSubject.LastName))
+        {
+            MessageBox.Show("Заполните фамилию!");
+            return;
         }
 
-        public void Initialize(int incidentId, Subject? subjectToEdit = null)
+        if (string.IsNullOrWhiteSpace(SelectedRole))
         {
-            _incidentId = incidentId;
-            ErrorMessage = string.Empty;
+            MessageBox.Show("Выберите роль для участника!");
+            return;
+        }
 
-            if (subjectToEdit != null)
+        try
+        {
+            if (_isEditMode)
             {
-                CurrentSubject = subjectToEdit;
-                _isEditMode = true;
-                SelectedRole = "Подозреваемый";
-                ConvictionsCount = CurrentSubject.NumberOfConvictions;
+                _subjectService.UpdateSubjectAndRole(CurrentSubject, _incidentId, SelectedRole);
+                MessageBox.Show("Данные обновлены, роль успешно добавлена/проверена.");
             }
             else
             {
-                CurrentSubject = new Subject();
-                _isEditMode = false;
-                ConvictionsCount = 0;
+                var roleLink = new SubjectRole
+                {
+                    IdIncident = _incidentId,
+                    RoleName = SelectedRole,
+                    DateOfInvolvement = DateOnly.FromDateTime(DateTime.Today)
+                };
+                _subjectService.AddSubjectAndLinkToIncident(CurrentSubject, roleLink);
+                MessageBox.Show("Участник успешно зарегистрирован.");
             }
+
+            OnSuccess?.Invoke();
         }
-
-        [RelayCommand]
-        private void Save()
+        catch (Exception ex)
         {
-            ErrorMessage = string.Empty;
-
-            if (ConvictionsCount < 0)
-            {
-                ErrorMessage = "Количество судимостей не может быть отрицательным";
-                return;
-            }
-
-            if (string.IsNullOrWhiteSpace(CurrentSubject.LastName))
-            {
-                ErrorMessage = "Укажите фамилию участника";
-                return;
-            }
-
-            if (string.IsNullOrWhiteSpace(CurrentSubject.FirstName))
-            {
-                ErrorMessage = "Укажите имя участника";
-                return;
-            }
-
-            if (string.IsNullOrWhiteSpace(SelectedRole))
-            {
-                ErrorMessage = "Выберите роль (Потерпевший, Свидетель и т.д.)";
-                return;
-            }
-
-            try
-            {
-                CurrentSubject.NumberOfConvictions = ConvictionsCount;
-
-                if (_isEditMode)
-                {
-                    _subjectService.UpdateSubjectAndRole(CurrentSubject, _incidentId, SelectedRole);
-                }
-                else
-                {
-                    var roleLink = new SubjectRole
-                    {
-                        IdIncident = _incidentId,
-                        RoleName = SelectedRole,
-                        DateOfInvolvement = DateOnly.FromDateTime(DateTime.Today)
-                    };
-                    _subjectService.AddSubjectAndLinkToIncident(CurrentSubject, roleLink);
-                }
-
-                OnSuccess?.Invoke();
-            }
-            catch (Exception ex)
-            {
-                ErrorMessage = ex.InnerException?.Message ?? ex.Message;
-            }
+            MessageBox.Show($"Ошибка: {ex.Message}");
         }
     }
 }

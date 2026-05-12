@@ -1,28 +1,33 @@
-﻿using System.Windows.Controls;
-using IncidentsRegistration.Data;
-using IncidentsRegistration.Models;
-using IncidentsRegistration.Services;
+﻿using IncidentsRegistration.Models;
 using IncidentsRegistration.ViewModels;
+using System.Windows.Controls;
 
 namespace IncidentsRegistration.Views
 {
     public partial class ResponseTeamEditPage : Page
     {
-        public ResponseTeamEditPage(ResponseTeam? team)
+        private readonly ResponseTeamEditViewModel _vm;
+
+        public ResponseTeamEditPage(ResponseTeamEditViewModel vm)
         {
             InitializeComponent();
 
-            var context = new IncidentsDbContext();
-            var service = new ResponseTeamService(context);
-            var viewModel = new ResponseTeamEditViewModel(service, team);
+            _vm = vm;
 
-            viewModel.OnRequestGoBack = () =>
+            DataContext = _vm;
+
+            _vm.OnRequestGoBack = () =>
             {
                 if (NavigationService.CanGoBack)
+                {
                     NavigationService.GoBack();
+                }
             };
+        }
 
-            DataContext = viewModel;
+        public void Initialize(ResponseTeam? team = null)
+        {
+            _vm.Initialize(team);
         }
     }
 }

@@ -12,68 +12,42 @@ namespace IncidentsRegistration.ViewModels
         private readonly ISubjectService _subjectService;
 
         [ObservableProperty]
-        private Incident _currentIncident = new();
+        private Incident _currentIncident;
 
         [ObservableProperty]
-        private string? _errorMessage;
-
-        public ObservableCollection<SubjectRole> UniqueParticipants { get; } = new();
+        private ObservableCollection<SubjectRole> _uniqueParticipants;
 
         public Action<int, Subject>? OnUpdateParticipantRequested;
 
-        public SubjectDetailsViewModel(ISubjectService subjectService)
+        public SubjectDetailsViewModel(Incident incident, ISubjectService subjectService)
         {
+            _currentIncident = incident;
             _subjectService = subjectService;
-        }
-
-        public void Initialize(Incident incident)
-        {
-            CurrentIncident = incident;
-            ErrorMessage = string.Empty;
             LoadParticipants();
         }
-
         public void LoadParticipants()
         {
-            try
-            {
-                UniqueParticipants.Clear();
-                var allRoles = _subjectService.GetParticipantsByIncident(CurrentIncident.IdIncident);
+            var allRoles = _subjectService.GetParticipantsByIncident(CurrentIncident.IdIncident);
 
-                var latestStats = allRoles
-                    .GroupBy(r => r.IdSubject)
-                    .Select(group => group
-                        .OrderByDescending(r => r.DateOfInvolvement)
-                        .ThenByDescending(r => r.IdSubjectRole)
-                        .First())
-                    .ToList();
+            var latestStats = allRoles
+                .GroupBy(r => r.IdSubject)
+                .Select(group => group
+                    .OrderByDescending(r => r.DateOfInvolvement)
+                    .ThenByDescending(r => r.IdSubjectRole)
+                    .First())
+                .ToList();
 
-                foreach (var participant in latestStats)
-                {
-                    UniqueParticipants.Add(participant);
-                }
-
-                if (UniqueParticipants.Count == 0)
-                    ErrorMessage = "У данного инцидента нет зарегистрированных участников.";
-            }
-            catch (Exception ex)
-            {
-                ErrorMessage = "Ошибка загрузки участников: " + (ex.InnerException?.Message ?? ex.Message);
-            }
+            UniqueParticipants = new ObservableCollection<SubjectRole>(latestStats);
         }
+
+
 
         [RelayCommand]
         private void RemoveParticipant(SubjectRole role)
         {
-            if (role?.IdSubjectNavigation == null) return;
-            ErrorMessage = string.Empty;
+            if (role == null) return;
 
-            var result = MessageBox.Show(
-                $"Вы уверены, что хотите удалить участие {role.IdSubjectNavigation.LastName} из данного инцидента?",
-                "Подтверждение удаления",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Question);
-
+            var result = MessageBox.Show($"Удалить участие {role.IdSubjectNavigation.LastName}?", "Удаление", MessageBoxButton.YesNo);
             if (result == MessageBoxResult.Yes)
             {
                 try
@@ -83,7 +57,7 @@ namespace IncidentsRegistration.ViewModels
                 }
                 catch (Exception ex)
                 {
-                    ErrorMessage = "Ошибка при удалении: " + (ex.InnerException?.Message ?? ex.Message);
+                    MessageBox.Show($"Ошибка: {ex.Message}");
                 }
             }
         }

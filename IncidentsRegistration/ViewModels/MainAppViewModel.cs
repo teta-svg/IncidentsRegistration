@@ -2,20 +2,26 @@
 using CommunityToolkit.Mvvm.Input;
 using IncidentsRegistration.Interfaces;
 using IncidentsRegistration.Models;
+using IncidentsRegistration.Views;
 using System.Windows;
 
 namespace IncidentsRegistration.ViewModels
 {
     public partial class MainAppViewModel : ObservableObject
     {
+        private readonly IUserService _userService;
+        private readonly IAuthService _authService;
         private readonly IIncidentService _incidentService;
-        private readonly IExportService _exportService; 
+        private readonly IExportService _exportService;
 
         [ObservableProperty]
-        private SystemUser _currentUser;
+        private SystemUser? currentUser;
 
         [ObservableProperty]
-        private string _role;
+        private string role = string.Empty;
+
+        [ObservableProperty]
+        private string errorMessage = string.Empty;
 
         public MainAppViewModel(
             IUserService userService,
@@ -23,57 +29,107 @@ namespace IncidentsRegistration.ViewModels
             IIncidentService incidentService,
             IExportService exportService)
         {
+            _userService = userService;
+            _authService = authService;
             _incidentService = incidentService;
             _exportService = exportService;
+        }
 
-            CurrentUser = userService.CurrentUser;
+        public void Initialize()
+        {
+            CurrentUser = _userService.CurrentUser;
 
             if (CurrentUser != null)
             {
-                Role = authService.GetRole(CurrentUser)?.Trim().ToLower();
+                Role = _authService
+                    .GetRole(CurrentUser)?
+                    .Trim()
+                    .ToLower() ?? string.Empty;
             }
+            else
+            {
+                Role = string.Empty;
+            }
+
+            OnPropertyChanged(nameof(CanSeeOperational));
+            OnPropertyChanged(nameof(IsLead));
+            OnPropertyChanged(nameof(IsAdmin));
         }
 
         public bool CanSeeAllIncidents => true;
-        public bool CanSeeOperational => Role == "администратор" || Role == "руководитель группы";
-        public bool IsLead => Role == "руководитель группы";
-        public bool IsAdmin => Role == "администратор";
+
+        public bool CanSeeOperational =>
+            Role == "администратор" ||
+            Role == "руководитель группы";
+
+        public bool IsLead =>
+            Role == "руководитель группы";
+
+        public bool IsAdmin =>
+            Role == "администратор";
 
         [RelayCommand]
         private void ExportGeneralReport()
         {
+            ErrorMessage = string.Empty;
+
             try
             {
                 var allIncidents = _incidentService.GetAll();
 
                 if (allIncidents == null || !allIncidents.Any())
                 {
-                    MessageBox.Show("Нет данных для формирования отчета.");
+                    ErrorMessage =
+                        "Нет данных для формирования отчета";
                     return;
                 }
 
                 var sfd = new Microsoft.Win32.SaveFileDialog
                 {
                     Filter = "Excel Files (*.xlsx)|*.xlsx",
-                    FileName = $"Общий_отчет_{DateTime.Now:dd_MM_yyyy}"
+                    FileName =
+                        $"Общий_отчет_{DateTime.Now:dd_MM_yyyy}"
                 };
 
                 if (sfd.ShowDialog() == true)
                 {
-                    _exportService.ExportAllIncidentsToExcel(allIncidents, sfd.FileName);
+                    _exportService.ExportAllIncidentsToExcel(
+                        allIncidents,
+                        sfd.FileName);
 
-                    MessageBox.Show("Отчет успешно создан!");
+                    ErrorMessage =
+                        "Отчет успешно создан";
 
-                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(sfd.FileName)
-                    {
-                        UseShellExecute = true
-                    });//открыть файл после сохранения
+                    System.Diagnostics.Process.Start(
+                        new System.Diagnostics.ProcessStartInfo(
+                            sfd.FileName)
+                        {
+                            UseShellExecute = true
+                        });
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка экспорта: {ex.Message}");
+                ErrorMessage =
+                    $"Ошибка экспорта: {ex.Message}";
             }
+        }
+        [RelayCommand]
+        private void OpenSubjects()
+        {
+            _nav.Navigate<IncidentSubjectsPage>();
+        }
+
+        [RelayCommand]
+        private void OpenIncidents()
+        {
+            _nav.Navigate<IncidentsPage>();
+        }
+
+        [RelayCommand]
+        private void OpenActiveIncidents()
+        {
+            _nav.Navigate<ActiveIncidentsPage>();
         }
     }
 }

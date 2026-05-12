@@ -1,35 +1,60 @@
-﻿using System.Windows;
-using System.Windows.Controls;
+﻿using IncidentsRegistration.Models;
 using IncidentsRegistration.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
+using System.Windows.Controls;
 
 namespace IncidentsRegistration.Views
 {
     public partial class ResponseTeamsPage : Page
     {
-        private readonly ResponseTeamsViewModel _viewModel;
+        private readonly IServiceProvider _serviceProvider;
+        private readonly ResponseTeamsViewModel _vm;
 
-        public ResponseTeamsPage()
+        public ResponseTeamsPage(
+            ResponseTeamsViewModel vm,
+            IServiceProvider serviceProvider)
         {
             InitializeComponent();
 
-            var viewModel = ((App)Application.Current).Services.GetRequiredService<ResponseTeamsViewModel>();
+            _vm = vm;
+            _serviceProvider = serviceProvider;
 
-            viewModel.OnAddRequested = () =>
-            {
-                this.NavigationService.Navigate(new ResponseTeamEditPage(null));
-            };
+            DataContext = _vm;
 
-            viewModel.OnUpdateRequested = (team) =>
-            {
-                this.NavigationService.Navigate(new ResponseTeamEditPage(team));
-            };
+            _vm.OnAddRequested = OpenAdd;
+            _vm.OnUpdateRequested = OpenUpdate;
 
-            this.Loaded += (s, e) => viewModel.LoadData();
-
-            DataContext = viewModel;
-            viewModel.LoadData();
+            Loaded += (s, e) => _vm.LoadData();
         }
 
+        private void OpenAdd()
+        {
+            var vm =
+                _serviceProvider.GetRequiredService<ResponseTeamEditViewModel>();
+
+            vm.Initialize();
+
+            var page =
+                _serviceProvider.GetRequiredService<ResponseTeamEditPage>();
+
+            page.Initialize();
+
+            NavigationService.Navigate(page);
+        }
+
+        private void OpenUpdate(ResponseTeam team)
+        {
+            var vm =
+                _serviceProvider.GetRequiredService<ResponseTeamEditViewModel>();
+
+            vm.Initialize(team);
+
+            var page =
+                _serviceProvider.GetRequiredService<ResponseTeamEditPage>();
+
+            page.Initialize(team);
+
+            NavigationService.Navigate(page);
+        }
     }
 }

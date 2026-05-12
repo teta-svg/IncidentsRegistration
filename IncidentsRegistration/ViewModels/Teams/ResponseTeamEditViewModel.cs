@@ -11,16 +11,24 @@ namespace IncidentsRegistration.ViewModels
         private readonly IResponseTeamService _teamService;
 
         [ObservableProperty]
-        private ResponseTeam _currentTeam;
+        private ResponseTeam currentTeam = new();
 
         [ObservableProperty]
-        private string _pageHeader;
+        private string pageHeader = string.Empty;
+
+        [ObservableProperty]
+        private string errorMessage = string.Empty;
 
         public Action? OnRequestGoBack;
 
-        public ResponseTeamEditViewModel(IResponseTeamService teamService, ResponseTeam? team = null)
+        public ResponseTeamEditViewModel(IResponseTeamService teamService)
         {
             _teamService = teamService;
+        }
+
+        public void Initialize(ResponseTeam? team = null)
+        {
+            ErrorMessage = string.Empty;
 
             if (team == null)
             {
@@ -38,6 +46,7 @@ namespace IncidentsRegistration.ViewModels
                     DirectorPatronymic = team.DirectorPatronymic,
                     NumberOfPeople = team.NumberOfPeople
                 };
+
                 PageHeader = "Редактирование";
             }
         }
@@ -45,30 +54,32 @@ namespace IncidentsRegistration.ViewModels
         [RelayCommand]
         private void Save()
         {
+            ErrorMessage = string.Empty;
+
             try
             {
                 if (string.IsNullOrWhiteSpace(CurrentTeam.NameTeam))
                 {
-                    MessageBox.Show("Введите название команды");
+                    ErrorMessage = "Введите название команды";
                     return;
                 }
 
                 if (CurrentTeam.IdResponseTeam == 0)
                 {
                     _teamService.AddTeam(CurrentTeam);
-                    MessageBox.Show("Группа успешно добавлена");
+                    ErrorMessage = "Группа успешно добавлена";
                 }
                 else
                 {
                     _teamService.UpdateTeam(CurrentTeam);
-                    MessageBox.Show("Данные обновлены");
+                    ErrorMessage = "Данные обновлены";
                 }
 
                 OnRequestGoBack?.Invoke();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка при сохранении: {ex.Message}");
+                ErrorMessage = ex.InnerException?.Message ?? ex.Message;
             }
         }
 

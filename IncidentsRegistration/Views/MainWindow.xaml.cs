@@ -9,8 +9,8 @@ namespace IncidentsRegistration.Views
         {
             InitializeComponent();
 
-            var scope = ((App)Application.Current).Services;
-            var loginPage = scope.GetRequiredService<LoginPage>();
+            var loginPage = ((App)Application.Current)
+                .Services.GetRequiredService<LoginPage>();
 
             MainFrame.Navigate(loginPage);
         }

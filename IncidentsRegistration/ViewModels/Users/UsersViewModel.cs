@@ -5,45 +5,107 @@ using IncidentsRegistration.Models;
 using System.Collections.ObjectModel;
 using System.Windows;
 
-namespace IncidentsRegistration.ViewModels;
-
-public partial class UsersViewModel : ObservableObject
+namespace IncidentsRegistration.ViewModels
 {
-    private readonly IUserService _userService;
-    public ObservableCollection<SystemUser> Users { get; } = new();
-
-    public Action? OnAddRequested;
-    public Action<SystemUser>? OnUpdateRequested;
-
-    [ObservableProperty]
-    private SystemUser? selectedUser;
-
-    public UsersViewModel(IUserService userService) => _userService = userService;
-
-    [RelayCommand]
-    public void LoadData()
+    public partial class UsersViewModel : ObservableObject
     {
-        Users.Clear();
-        foreach (var user in _userService.GetAllUsers()) Users.Add(user);
-    }
+        private readonly IUserService _userService;
 
-    [RelayCommand]
-    private void Add() => OnAddRequested?.Invoke();
+        public ObservableCollection<SystemUser> Users { get; } = new();
 
-    [RelayCommand]
-    private void Update()
-    {
-        if (SelectedUser != null) OnUpdateRequested?.Invoke(SelectedUser);
-    }
+        public Action? OnAddRequested;
+        public Action<SystemUser>? OnUpdateRequested;
 
-    [RelayCommand]
-    private void Delete()
-    {
-        if (SelectedUser == null) return;
-        if (MessageBox.Show("Удалить пользователя?", "Внимание", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+        [ObservableProperty]
+        private SystemUser? selectedUser;
+
+        [ObservableProperty]
+        private string errorMessage = string.Empty;
+
+        public UsersViewModel(IUserService userService)
         {
-            _userService.DeleteUser(SelectedUser.IdUser);
-            LoadData();
+            _userService = userService;
+        }
+
+        [RelayCommand]
+        public void LoadData()
+        {
+            ErrorMessage = string.Empty;
+
+            try
+            {
+                Users.Clear();
+
+                foreach (var user in _userService.GetAllUsers())
+                {
+                    Users.Add(user);
+                }
+
+                if (Users.Count == 0)
+                {
+                    ErrorMessage = "Пользователи не найдены";
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage =
+                    ex.InnerException?.Message ?? ex.Message;
+            }
+        }
+
+        [RelayCommand]
+        private void Add()
+        {
+            OnAddRequested?.Invoke();
+        }
+
+        [RelayCommand]
+        private void Update()
+        {
+            ErrorMessage = string.Empty;
+
+            if (SelectedUser == null)
+            {
+                ErrorMessage = "Выберите пользователя";
+                return;
+            }
+
+            OnUpdateRequested?.Invoke(SelectedUser);
+        }
+
+        [RelayCommand]
+        private void Delete()
+        {
+            ErrorMessage = string.Empty;
+
+            if (SelectedUser == null)
+            {
+                ErrorMessage = "Выберите пользователя";
+                return;
+            }
+
+            var result = MessageBox.Show(
+                $"Удалить пользователя {SelectedUser.LoginName}?",
+                "Подтверждение удаления",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning);
+
+            if (result != MessageBoxResult.Yes)
+                return;
+
+            try
+            {
+                _userService.DeleteUser(SelectedUser.IdUser);
+
+                LoadData();
+
+                ErrorMessage = "Пользователь удалён";
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage =
+                    ex.InnerException?.Message ?? ex.Message;
+            }
         }
     }
 }

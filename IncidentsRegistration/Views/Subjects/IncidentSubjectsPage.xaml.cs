@@ -1,61 +1,62 @@
-﻿using IncidentsRegistration.Models;
+﻿using IncidentsRegistration.Interfaces;
 using IncidentsRegistration.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Navigation;
 
 namespace IncidentsRegistration.Views
 {
     public partial class IncidentSubjectsPage : Page
     {
-        private readonly IServiceProvider _serviceProvider;
-
-        public IncidentSubjectsPage(
-            IncidentSubjectsViewModel vm,
-            IServiceProvider serviceProvider)
+        public IncidentSubjectsPage(IncidentSubjectsViewModel vm)
         {
             InitializeComponent();
-
             DataContext = vm;
-            _serviceProvider = serviceProvider;
+
+            var services = ((App)Application.Current).Services;
 
             vm.OnAddParticipantRequested = (incidentId) =>
             {
-                var addVm = _serviceProvider.GetRequiredService<AddSubjectViewModel>();
+                var subjectService = services.GetRequiredService<ISubjectService>();
+                var addVm = new AddSubjectViewModel(subjectService, incidentId);
 
-                addVm.Initialize(incidentId);
+                var nav = NavigationService;
 
-                addVm.OnSuccess = () =>
-                {
-                    if (NavigationService.CanGoBack)
-                        NavigationService.GoBack();
-
+                addVm.OnSuccess = () => {
+                    if (nav != null && nav.CanGoBack)
+                    {
+                        nav.GoBack();
+                    }
                     vm.LoadData();
                 };
 
-                var addPage = _serviceProvider.GetRequiredService<AddSubjectPage>();
-
-                addPage.DataContext = addVm;
-
-                NavigationService.Navigate(addPage);
+                NavigationService.Navigate(new AddSubjectPage(addVm));
             };
 
             vm.OnShowDetailsRequested = (incident) =>
             {
-                var detailsVm = _serviceProvider.GetRequiredService<SubjectDetailsViewModel>();
+                var subjectService = ((App)Application.Current).Services.GetRequiredService<ISubjectService>();
+                var detailsVm = new SubjectDetailsViewModel(incident, subjectService);
 
-                detailsVm.Initialize(incident);
-
-                var detailsPage = _serviceProvider.GetRequiredService<SubjectDetailsPage>();
-
-                detailsPage.DataContext = detailsVm;
-
-                NavigationService.Navigate(detailsPage);
+                NavigationService.Navigate(new SubjectDetailsPage(detailsVm));
             };
+
+            vm.OnUpdateParticipantRequested = (incidentId, subject) =>
+            {
+                var subjectService = services.GetRequiredService<ISubjectService>();
+                var addVm = new AddSubjectViewModel(subjectService, incidentId, subject);
+
+                addVm.OnSuccess = () => {
+                    if (NavigationService.CanGoBack) NavigationService.GoBack();
+                    vm.LoadData();
+                };
+
+                NavigationService.Navigate(new AddSubjectPage(addVm));
+            };
+
+            this.Loaded += (s, e) => vm.LoadData();
         }
 
-        public void Initialize(SystemUser user)
-        {
-            ((IncidentSubjectsViewModel)DataContext).Initialize(user);
-        }
     }
 }
