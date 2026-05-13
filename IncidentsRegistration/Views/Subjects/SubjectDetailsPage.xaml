@@ -166,7 +166,8 @@
                 <Grid>
                     <TextBlock Text="Просмотр детальных сведений" 
                                VerticalAlignment="Center" Foreground="Black" FontWeight="Bold"/>
-                    <Button Content="ВЕРНУТЬСЯ К ИНЦИДЕНТАМ" Click="Back_Click" 
+                    <Button Content="ВЕРНУТЬСЯ К ИНЦИДЕНТАМ"
+                            Command="{Binding BackCommand}"
                             HorizontalAlignment="Right" Background="{StaticResource SecondaryBlue}" 
                             Foreground="Black" FontWeight="Bold" Width="220" Height="40"
                             BorderThickness="2" BorderBrush="{StaticResource PrimaryPink}" Cursor="Hand"/>

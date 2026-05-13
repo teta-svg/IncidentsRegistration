@@ -147,7 +147,7 @@
                             Background="{StaticResource SecondaryYellow}"
                             Foreground="Black"
                             BorderThickness="0"
-                            Click="Back_Click"/>
+                            Command="{Binding BackToLoginCommand}"/>
                 </UniformGrid>
 
             </StackPanel>

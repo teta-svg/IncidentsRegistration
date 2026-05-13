@@ -1,18 +1,17 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System.Windows;
+﻿using System.Windows;
+using IncidentsRegistration.Interfaces;
 
 namespace IncidentsRegistration.Views
 {
     public partial class MainWindow : Window
     {
-        public MainWindow()
+        public MainWindow(INavigationService navigation)
         {
             InitializeComponent();
 
-            var loginPage = ((App)Application.Current)
-                .Services.GetRequiredService<LoginPage>();
+            navigation.SetFrame(MainFrame);
 
-            MainFrame.Navigate(loginPage);
+            navigation.Navigate<LoginPage>();
         }
     }
 }

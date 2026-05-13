@@ -130,7 +130,7 @@
                             Background="{StaticResource SecondaryYellow}"
                             Foreground="Black"
                             BorderThickness="0"
-                            Click="GoToRegister_Click"/>
+                            Command="{Binding OpenRegisterCommand}"/>
                 </UniformGrid>
 
             </StackPanel>

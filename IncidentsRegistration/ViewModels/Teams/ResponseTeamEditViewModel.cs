@@ -2,7 +2,6 @@
 using CommunityToolkit.Mvvm.Input;
 using IncidentsRegistration.Interfaces;
 using IncidentsRegistration.Models;
-using System.Windows;
 
 namespace IncidentsRegistration.ViewModels
 {

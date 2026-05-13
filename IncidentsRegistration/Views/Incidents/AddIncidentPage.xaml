@@ -173,7 +173,8 @@
                                 Background="{StaticResource SecondaryBlue}" 
                                 Foreground="Black" BorderThickness="2" 
                                 BorderBrush="{StaticResource PrimaryPink}" 
-                                FontWeight="Bold" Click="Back_Click"/>
+                                FontWeight="Bold"
+                                Command="{Binding BackCommand}"/>
                         <Button Content="СОХРАНИТЬ КАРТОЧКУ" Width="220" 
                                 Height="45" Margin="5,0" 
                                 Background="{StaticResource SecondaryYellow}" 
@@ -181,7 +182,7 @@
                                 FontWeight="Bold" 
                                 BorderThickness="2" 
                                 BorderBrush="{StaticResource PrimaryPink}" 
-                                Click="Save_Click"/>
+                                Command="{Binding SaveCommand}"/>
                     </StackPanel>
                 </Grid>
             </Border>

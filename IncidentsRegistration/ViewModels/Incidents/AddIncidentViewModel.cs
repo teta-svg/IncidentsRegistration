@@ -11,23 +11,24 @@ namespace IncidentsRegistration.ViewModels
         private readonly IIncidentService _incidentService;
         private readonly ILocationService _locationService;
         private readonly IResponseTeamService _teamService;
+        private readonly IContentNavigationService _nav;
 
-        [ObservableProperty] 
+        [ObservableProperty]
         private Incident _newIncident;
 
-        [ObservableProperty] 
+        [ObservableProperty]
         private Location _newLocation;
 
-        [ObservableProperty] 
+        [ObservableProperty]
         private DateTime _displayDate = DateTime.Today;
 
-        [ObservableProperty] 
+        [ObservableProperty]
         private DateTime _displayTime = DateTime.Now;
 
-        [ObservableProperty] 
+        [ObservableProperty]
         private string _pageTitle = "РЕГИСТРАЦИЯ ИНЦИДЕНТА";
 
-        [ObservableProperty] 
+        [ObservableProperty]
         private string? _errorMessage;
 
         public ObservableCollection<ResponseTeam> FreeTeams { get; } = new();
@@ -38,13 +39,15 @@ namespace IncidentsRegistration.ViewModels
         private bool _isEditMode;
 
         public AddIncidentViewModel(
-                IIncidentService incidentService,
-                ILocationService locationService,
-                IResponseTeamService teamService)
+            IIncidentService incidentService,
+            ILocationService locationService,
+            IResponseTeamService teamService,
+            IContentNavigationService nav)
         {
             _incidentService = incidentService;
             _locationService = locationService;
             _teamService = teamService;
+            _nav = nav;
 
             _newIncident = new Incident();
             _newLocation = new Location();
@@ -81,7 +84,6 @@ namespace IncidentsRegistration.ViewModels
             SelectedTeam = FreeTeams.FirstOrDefault(t => t.IdResponseTeam == NewIncident.IdResponseTeam);
         }
 
-
         [RelayCommand]
         private void Save()
         {
@@ -93,8 +95,8 @@ namespace IncidentsRegistration.ViewModels
                 return;
             }
 
-            if (string.IsNullOrWhiteSpace(NewLocation.Region) || 
-                string.IsNullOrWhiteSpace(NewLocation.Settlement) || 
+            if (string.IsNullOrWhiteSpace(NewLocation.Region) ||
+                string.IsNullOrWhiteSpace(NewLocation.Settlement) ||
                 string.IsNullOrWhiteSpace(NewLocation.Street))
             {
                 ErrorMessage = "Заполните адрес";
@@ -128,15 +130,28 @@ namespace IncidentsRegistration.ViewModels
                 }
                 else
                 {
-                    var actualLocation = _locationService.GetOrCreateLocation(NewLocation);
-                    _incidentService.CreateIncident(NewIncident, actualLocation.IdLocation);
+                    var actualLocation =
+                        _locationService.GetOrCreateLocation(NewLocation);
+
+                    _incidentService.CreateIncident(
+                        NewIncident,
+                        actualLocation.IdLocation);
+
                     ErrorMessage = "Инцидент успешно зарегистрирован";
                 }
+
+                _nav.GoBack();
             }
             catch (Exception ex)
             {
                 ErrorMessage = ex.InnerException?.Message ?? ex.Message;
             }
+        }
+
+        [RelayCommand]
+        private void Back()
+        {
+            _nav.GoBack();
         }
     }
 }

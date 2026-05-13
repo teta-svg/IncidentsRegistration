@@ -78,7 +78,7 @@
                            FontWeight="Bold" 
                            Foreground="Black"/>
             </StackPanel>
-            
+
             <Grid Grid.Row="1" Margin="0,20,0,15">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -94,17 +94,20 @@
                                FontSize="12"/>
                     <StackPanel Orientation="Horizontal">
                         <RadioButton Content="Времени" 
-                                     Click="SortByTime_Click" 
+                                     Command="{Binding SortByCommand}"
+                                     CommandParameter="RegistrationTime"
                                      Foreground="Black" 
                                      FontWeight="Medium" 
                                      Margin="0,0,10,0"/>
                         <RadioButton Content="Типу" 
-                                     Click="SortByType_Click" 
+                                     Command="{Binding SortByCommand}"
+                                     CommandParameter="TypeOfIncident"
                                      Foreground="Black" 
                                      FontWeight="Medium" 
                                      Margin="0,0,10,0"/>
                         <RadioButton Content="Группе" 
-                                     Click="SortByTeam_Click" 
+                                     Command="{Binding SortByCommand}"
+                                     CommandParameter="IdResponseTeamNavigation.NameTeam"
                                      Foreground="Black" 
                                      FontWeight="Medium"/>
                     </StackPanel>
@@ -121,14 +124,13 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="🔍" VerticalAlignment="Center" Margin="5,0,10,0" Foreground="Black"/>
-                        <TextBox x:Name="SearchBox" 
-                                 Grid.Column="1" 
-                                 Text="{Binding SearchText}" 
-                                 TextChanged="SearchBox_TextChanged"
-                                 BorderThickness="0" 
-                                 Background="Transparent" 
+                        <TextBox x:Name="SearchBox"
+                                 Grid.Column="1"
+                                 Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                                 BorderThickness="0"
+                                 Background="Transparent"
                                  VerticalAlignment="Center"
-                                 Foreground="Black" 
+                                 Foreground="Black"
                                  FontWeight="Medium"/>
                     </Grid>
                 </Border>

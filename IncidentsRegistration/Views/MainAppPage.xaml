@@ -116,18 +116,18 @@
                                        FontWeight="Bold" 
                                        Foreground="Black" 
                                        Margin="0,10,0,8"/>
-                            <Button Content="ВСЕ ИНЦИДЕНТЫ" 
-                                    Style="{StaticResource MenuButtonStyle}" 
-                                    Visibility="{Binding CanSeeAllIncidents, Converter={StaticResource BoolToVis}}" 
-                                    Click="Incidents_Click"/>
+                            <Button Content="ВСЕ ИНЦИДЕНТЫ"
+                                    Style="{StaticResource MenuButtonStyle}"
+                                    Visibility="{Binding CanSeeAllIncidents, Converter={StaticResource BoolToVis}}"
+                                    Command="{Binding OpenIncidentsCommand}"/>
                             <Button Content="АКТИВНЫЕ ИНЦИДЕНТЫ" 
                                     Style="{StaticResource MenuButtonStyle}" 
                                     Visibility="{Binding IsLead, Converter={StaticResource BoolToVis}}" 
-                                    Click="ActiveIncidents_Click"/>
+                                    Command="{Binding OpenActiveIncidentsCommand}"/>
                             <Button Content="УЧАСТНИКИ" 
                                     Style="{StaticResource MenuButtonStyle}" 
                                     Visibility="{Binding IsLead, Converter={StaticResource BoolToVis}}" 
-                                    Click="Subjects_Click"/>
+                                   Command="{Binding OpenSubjectsCommand}"/>
 
                             <TextBlock Text="АНАЛИТИКА" 
                                        FontSize="11" 
@@ -149,11 +149,11 @@
                             <Button Content="ГРУППЫ РЕАГИРОВАНИЯ" 
                                     Style="{StaticResource MenuButtonStyle}" 
                                     Visibility="{Binding IsAdmin, Converter={StaticResource BoolToVis}}" 
-                                    Click="Teams_Click"/>
+                                    Command="{Binding OpenTeamsCommand}"/>
                             <Button Content="ПОЛЬЗОВАТЕЛИ" 
                                     Style="{StaticResource MenuButtonStyle}" 
                                     Visibility="{Binding IsAdmin, Converter={StaticResource BoolToVis}}" 
-                                    Click="Users_Click"/>
+                                    Command="{Binding OpenUsersCommand}"/>
                         </StackPanel>
                     </ScrollViewer>
 
@@ -185,7 +185,7 @@
                                 FontWeight="Bold" 
                                 BorderThickness="2" 
                                 BorderBrush="{StaticResource PrimaryPink}" 
-                                Click="Logout_Click">
+                                Command="{Binding LogoutCommand}">
                         </Button>
                     </StackPanel>
                 </Grid>
@@ -196,7 +196,7 @@
                         BorderThickness="2" 
                         Background="{StaticResource SecondaryBlue}" 
                         Opacity="0.05"/>
-                <Frame x:Name="MainFrame" 
+                <Frame x:Name="ContentFrame" 
                        NavigationUIVisibility="Hidden"/>
             </Grid>
         </Grid>

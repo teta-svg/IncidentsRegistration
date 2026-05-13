@@ -7,50 +7,61 @@ using System.Windows;
 public partial class AddSubjectViewModel : ObservableObject
 {
     private readonly ISubjectService _subjectService;
-    private readonly int _incidentId;
-    private readonly bool _isEditMode;
+    private readonly IContentNavigationService _nav;
+    private int _incidentId;
+    private bool _isEditMode;
 
-    public Action? OnSuccess;
+    [ObservableProperty]
+    private Subject _currentSubject = new();
 
-    [ObservableProperty] private Subject _currentSubject;
-    [ObservableProperty] private string? _selectedRole;
+    [ObservableProperty] 
+    private string? _selectedRole;
+
+    [ObservableProperty]
+    private string? errorMessage;
 
     public List<string> Roles { get; } = new() { "Потерпевший", "Свидетель", "Заявитель", "Подозреваемый" };
 
     public Visibility RoleSelectionVisibility => Visibility.Visible;
 
-    public string ButtonText => _isEditMode ? "СОХРАНИТЬ ИЗМЕНЕНИЯ" : "ЗАРЕГИСТРИРОВАТЬ";
+    private bool IsEditMode => CurrentSubject.IdSubject > 0;
 
-    public AddSubjectViewModel(ISubjectService service, int incidentId, Subject? subjectToEdit = null)
+    public string ButtonText => IsEditMode ? "СОХРАНИТЬ ИЗМЕНЕНИЯ" : "ЗАРЕГИСТРИРОВАТЬ";
+
+    public AddSubjectViewModel(
+     ISubjectService service,
+     IContentNavigationService nav)
     {
         _subjectService = service;
-        _incidentId = incidentId;
+        _nav = nav;
+    }
 
-        if (subjectToEdit != null)
-        {
-            _currentSubject = subjectToEdit;
-            _isEditMode = true;
-            SelectedRole = "Подозреваемый";
-        }
-        else
-        {
-            _currentSubject = new Subject();
-            _isEditMode = false;
-        }
+    public void Initialize(SubjectEditPayloadDTO payload)
+    {
+        _incidentId = payload.IncidentId;
+
+        _isEditMode = payload.Subject != null;
+
+        CurrentSubject = payload.Subject ?? new Subject();
     }
 
     [RelayCommand]
     private void Save()
     {
+        ErrorMessage = string.Empty;
+
+        if (CurrentSubject == null)
+            CurrentSubject = new Subject();
+
         if (string.IsNullOrWhiteSpace(CurrentSubject.LastName))
         {
-            MessageBox.Show("Заполните фамилию!");
+            ErrorMessage = "Заполните фамилию!";
             return;
         }
 
         if (string.IsNullOrWhiteSpace(SelectedRole))
         {
-            MessageBox.Show("Выберите роль для участника!");
+            ErrorMessage = "Выберите роль для участника!";
             return;
         }
 
@@ -59,7 +70,6 @@ public partial class AddSubjectViewModel : ObservableObject
             if (_isEditMode)
             {
                 _subjectService.UpdateSubjectAndRole(CurrentSubject, _incidentId, SelectedRole);
-                MessageBox.Show("Данные обновлены, роль успешно добавлена/проверена.");
             }
             else
             {
@@ -69,15 +79,21 @@ public partial class AddSubjectViewModel : ObservableObject
                     RoleName = SelectedRole,
                     DateOfInvolvement = DateOnly.FromDateTime(DateTime.Today)
                 };
+
                 _subjectService.AddSubjectAndLinkToIncident(CurrentSubject, roleLink);
-                MessageBox.Show("Участник успешно зарегистрирован.");
             }
 
-            OnSuccess?.Invoke();
+            _nav.GoBack();
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Ошибка: {ex.Message}");
+            ErrorMessage = $"Ошибка: {ex.Message}";
         }
+    }
+
+    [RelayCommand]
+    private void Back()
+    {
+        _nav.GoBack();
     }
 }

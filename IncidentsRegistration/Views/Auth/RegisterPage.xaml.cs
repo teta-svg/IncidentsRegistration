@@ -1,5 +1,4 @@
 ﻿using IncidentsRegistration.ViewModels;
-using System.Windows;
 using System.Windows.Controls;
 
 namespace IncidentsRegistration.Views
@@ -11,24 +10,18 @@ namespace IncidentsRegistration.Views
         public RegisterPage(RegisterViewModel vm)
         {
             InitializeComponent();
+
             _vm = vm;
+
             DataContext = _vm;
         }
 
-        private void Register_Click(object sender, RoutedEventArgs e)
+        private void Register_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             _vm.Password = PasswordBox.Password;
             _vm.ConfirmPassword = ConfirmPasswordBox.Password;
 
-            if (_vm.RegisterUserCommand.CanExecute(null))
-            {
-                _vm.RegisterUserCommand.Execute(null);
-            }
-        }
-
-        private void Back_Click(object sender, RoutedEventArgs e)
-        {
-            NavigationService?.GoBack();
+            _vm.RegisterUserCommand.Execute(null);
         }
     }
 }

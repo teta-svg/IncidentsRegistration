@@ -2,8 +2,11 @@
 using CommunityToolkit.Mvvm.Input;
 using IncidentsRegistration.Interfaces;
 using IncidentsRegistration.Models;
+using IncidentsRegistration.Views;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Windows;
+using System.Windows.Data;
 
 namespace IncidentsRegistration.ViewModels
 {
@@ -11,12 +14,15 @@ namespace IncidentsRegistration.ViewModels
     {
         private readonly IIncidentService _incidentService;
         private readonly IUserService _userService;
+        private readonly IContentNavigationService _nav;
+        private ICollectionView? _incidentsView;
+        private ICollectionView View 
+            => _incidentsView ??= CollectionViewSource.GetDefaultView(Incidents);
+
+        partial void OnSearchTextChanged(string value)
+            => View?.Refresh();
 
         public ObservableCollection<Incident> Incidents { get; } = new();
-
-        public Action<Incident>? OnShowDetailsRequested;
-        public Action? OnAddRequested;
-        public Action<Incident>? OnUpdateRequested;
 
         [ObservableProperty]
         private Incident? selectedIncident;
@@ -27,12 +33,17 @@ namespace IncidentsRegistration.ViewModels
         [ObservableProperty]
         private string errorMessage = string.Empty;
 
+        [ObservableProperty]
+        private string searchText = string.Empty;
+
         public IncidentsViewModel(
             IIncidentService incidentService,
-            IUserService userService)
+            IUserService userService,
+            IContentNavigationService nav)
         {
             _incidentService = incidentService;
             _userService = userService;
+            _nav = nav;
 
             var currentUser = _userService.CurrentUser;
 
@@ -45,8 +56,8 @@ namespace IncidentsRegistration.ViewModels
         }
 
         public bool CanEdit =>
-            Role == "администратор" ||
-            Role == "руководитель группы";
+                Role == "администратор" ||
+                Role == "руководитель группы";
 
         public bool CanDelete =>
             Role == "администратор";
@@ -67,6 +78,11 @@ namespace IncidentsRegistration.ViewModels
                     Incidents.Add(incident);
                 }
 
+                _incidentsView =
+                    CollectionViewSource.GetDefaultView(Incidents);
+
+                _incidentsView.Filter = FilterIncidents;
+
                 if (Incidents.Count == 0)
                 {
                     ErrorMessage = "Инциденты не найдены";
@@ -86,13 +102,11 @@ namespace IncidentsRegistration.ViewModels
 
             if (SelectedIncident == null)
             {
-                ErrorMessage =
-                    "Выберите инцидент для просмотра";
+                ErrorMessage = "Выберите инцидент для просмотра";
                 return;
             }
 
-            OnShowDetailsRequested?.Invoke(
-                SelectedIncident);
+            _nav.Navigate<IncidentDetailsPage>(SelectedIncident.IdIncident);
         }
 
         [RelayCommand]
@@ -100,7 +114,7 @@ namespace IncidentsRegistration.ViewModels
         {
             ErrorMessage = string.Empty;
 
-            OnAddRequested?.Invoke();
+            _nav.Navigate<AddIncidentPage>();
         }
 
         [RelayCommand]
@@ -110,13 +124,11 @@ namespace IncidentsRegistration.ViewModels
 
             if (SelectedIncident == null)
             {
-                ErrorMessage =
-                    "Выберите инцидент для редактирования";
+                ErrorMessage = "Выберите инцидент для редактирования";
                 return;
             }
 
-            OnUpdateRequested?.Invoke(
-                SelectedIncident);
+            _nav.Navigate<AddIncidentPage>(SelectedIncident);
         }
 
         [RelayCommand]
@@ -155,6 +167,38 @@ namespace IncidentsRegistration.ViewModels
                 ErrorMessage =
                     ex.InnerException?.Message ?? ex.Message;
             }
+        }
+
+        [RelayCommand]
+        private void SortBy(string property)
+        {
+            var view = View;
+
+            view.SortDescriptions.Clear();
+            view.SortDescriptions.Add(
+                new SortDescription(property,
+                    ListSortDirection.Ascending));
+        }
+
+        private bool FilterIncidents(object obj)
+        {
+            if (obj is not Incident incident)
+                return false;
+
+            if (string.IsNullOrWhiteSpace(SearchText))
+                return true;
+
+            var search = SearchText.ToLower().Trim();
+
+            return
+                (incident.TypeOfIncident?
+                    .ToLower()
+                    .Contains(search) ?? false)
+                ||
+                (incident.IdResponseTeamNavigation?
+                    .NameTeam?
+                    .ToLower()
+                    .Contains(search) ?? false);
         }
     }
 }

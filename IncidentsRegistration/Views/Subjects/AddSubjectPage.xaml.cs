@@ -1,5 +1,4 @@
-﻿using System.Windows;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 
 namespace IncidentsRegistration.Views
 {
@@ -9,11 +8,6 @@ namespace IncidentsRegistration.Views
         {
             InitializeComponent();
             DataContext = vm;
-        }
-        private void Cancel_Click(object sender, RoutedEventArgs e)
-        {
-            if (this.NavigationService?.CanGoBack == true)
-                this.NavigationService.GoBack();
         }
     }
 }

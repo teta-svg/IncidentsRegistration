@@ -134,7 +134,7 @@
                                 BorderThickness="2" 
                                 BorderBrush="{StaticResource PrimaryPink}" 
                                 FontWeight="Bold" 
-                                Click="Cancel_Click"/>
+                                 Command="{Binding BackCommand}" />
 
                         <Button Content="{Binding ButtonText}" 
                                 Command="{Binding SaveCommand}" 

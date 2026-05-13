@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using IncidentsRegistration.Interfaces;
 using IncidentsRegistration.Models;
+using IncidentsRegistration.Views;
 using System.Collections.ObjectModel;
 using System.Windows;
 
@@ -10,13 +11,11 @@ namespace IncidentsRegistration.ViewModels
     public partial class ResponseTeamsViewModel : ObservableObject
     {
         private readonly IResponseTeamService _teamService;
+        private readonly IContentNavigationService _nav;
 
         private List<ResponseTeam> _allTeamsBuffer = new();
 
         public ObservableCollection<ResponseTeam> ResponseTeams { get; } = new();
-
-        public Action? OnAddRequested;
-        public Action<ResponseTeam>? OnUpdateRequested;
 
         [ObservableProperty]
         private ResponseTeam? selectedResponseTeam;
@@ -32,9 +31,10 @@ namespace IncidentsRegistration.ViewModels
             ApplyFilter();
         }
 
-        public ResponseTeamsViewModel(IResponseTeamService teamService)
+        public ResponseTeamsViewModel(IResponseTeamService teamService, IContentNavigationService nav)
         {
             _teamService = teamService;
+            _nav = nav;
         }
 
         [RelayCommand]
@@ -87,7 +87,7 @@ namespace IncidentsRegistration.ViewModels
         [RelayCommand]
         private void Add()
         {
-            OnAddRequested?.Invoke();
+            _nav.Navigate<ResponseTeamEditPage>();
         }
 
         [RelayCommand]
@@ -101,7 +101,7 @@ namespace IncidentsRegistration.ViewModels
                 return;
             }
 
-            OnUpdateRequested?.Invoke(SelectedResponseTeam);
+            _nav.Navigate<ResponseTeamEditPage>(SelectedResponseTeam);
         }
 
         [RelayCommand]

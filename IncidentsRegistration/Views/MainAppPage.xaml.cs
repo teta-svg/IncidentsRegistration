@@ -1,21 +1,24 @@
-﻿using IncidentsRegistration.ViewModels;
+﻿using IncidentsRegistration.Interfaces;
+using IncidentsRegistration.ViewModels;
 using System.Windows.Controls;
 
 namespace IncidentsRegistration.Views
 {
     public partial class MainAppPage : Page
     {
-        private readonly MainAppViewModel _vm;
-
-        public MainAppPage(MainAppViewModel vm)
+        public MainAppPage(
+            MainAppViewModel vm,
+            IContentNavigationService contentNav)
         {
             InitializeComponent();
+
             DataContext = vm;
 
-            Loaded += (s, e) =>
-            {
-                _vm.Initialize();
-            };
+            contentNav.SetFrame(ContentFrame);
+
+            contentNav.Navigate<IncidentsPage>();
+
+            vm.Initialize();
         }
     }
 }

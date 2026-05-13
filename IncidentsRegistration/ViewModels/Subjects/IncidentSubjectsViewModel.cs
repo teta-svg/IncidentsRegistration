@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using IncidentsRegistration.Interfaces;
 using IncidentsRegistration.Models;
+using IncidentsRegistration.Views;
 using System.Collections.ObjectModel;
 using System.Windows;
 
@@ -11,51 +12,64 @@ namespace IncidentsRegistration.ViewModels
     {
         private readonly IIncidentService _incidentService;
         private readonly ISubjectService _subjectService;
-        private readonly SystemUser _currentUser;
+        private readonly IUserService _userService;
+        private readonly IContentNavigationService _nav;
 
-        [ObservableProperty] private ObservableCollection<Incident> _incidents;
-        [ObservableProperty] private Incident? _selectedIncident;
-        [ObservableProperty] private ObservableCollection<SubjectRole> _participants;
+        [ObservableProperty]
+        private ObservableCollection<Incident> _incidents = new();
 
-        public Action<int>? OnAddParticipantRequested;
-        public Action<Incident>? OnShowDetailsRequested;
-        public Action<int, Subject>? OnUpdateParticipantRequested;
+        [ObservableProperty]
+        private Incident? _selectedIncident;
 
-        public IncidentSubjectsViewModel(IIncidentService service, ISubjectService subjectService, SystemUser user)
+        [ObservableProperty]
+        private ObservableCollection<SubjectRole> _participants = new();
+
+        public IncidentSubjectsViewModel(
+            IIncidentService service,
+            ISubjectService subjectService,
+            IUserService userService,
+            IContentNavigationService nav)
         {
             _incidentService = service;
             _subjectService = subjectService;
-            _currentUser = user;
+            _userService = userService;
+            _nav = nav;
+
             LoadData();
         }
 
         public void LoadData()
         {
-            var teamLink = _currentUser.SystemUserResponseTeams.FirstOrDefault();
-            if (teamLink != null)
+            var user = _userService.CurrentUser;
+
+            var teamLink = user?.SystemUserResponseTeams?.FirstOrDefault();
+
+            if (teamLink == null)
             {
-                var data = _incidentService.GetAll()
-                    .Where(i => i.IdResponseTeam == teamLink.IdResponseTeam)
-                    .ToList();
-
-                foreach (var incident in data)
-                {
-                    if (incident.SubjectRoles != null)
-                    {
-                        incident.SubjectRoles = incident.SubjectRoles
-                            .GroupBy(sr => sr.IdSubject)
-                            .Select(g => g
-                                .OrderByDescending(sr => sr.DateOfInvolvement)
-                                .ThenByDescending(sr => sr.IdSubjectRole)
-                                .First())
-                            .ToList();
-                    }
-                }
-
-                Incidents = new ObservableCollection<Incident>(data);
+                Incidents.Clear();
+                return;
             }
-        }
 
+            var data = _incidentService.GetAll()
+                .Where(i => i.IdResponseTeam == teamLink.IdResponseTeam)
+                .ToList();
+
+            foreach (var incident in data)
+            {
+                if (incident.SubjectRoles != null)
+                {
+                    incident.SubjectRoles = incident.SubjectRoles
+                        .GroupBy(sr => sr.IdSubject)
+                        .Select(g => g
+                            .OrderByDescending(sr => sr.DateOfInvolvement)
+                            .ThenByDescending(sr => sr.IdSubjectRole)
+                            .First())
+                        .ToList();
+                }
+            }
+
+            Incidents = new ObservableCollection<Incident>(data);
+        }
 
         partial void OnSelectedIncidentChanged(Incident? value)
         {
@@ -87,14 +101,37 @@ namespace IncidentsRegistration.ViewModels
                 MessageBox.Show("Выберите инцидент!");
                 return;
             }
-            OnShowDetailsRequested?.Invoke(SelectedIncident);
+
+            _nav.Navigate<SubjectDetailsPage>(SelectedIncident);
         }
 
         [RelayCommand]
         private void AddParticipant()
         {
-            if (SelectedIncident == null) return;
-            OnAddParticipantRequested?.Invoke(SelectedIncident.IdIncident);
+            if (SelectedIncident == null)
+                return;
+
+            _nav.Navigate<AddSubjectPage>(
+                new SubjectEditPayloadDTO
+                {
+                    IncidentId = SelectedIncident.IdIncident,
+                    Subject = null
+                });
+        }
+
+        [RelayCommand]
+        private void UpdateParticipant(Subject subject)
+        {
+            if (SelectedIncident == null)
+                return;
+
+            _nav.Navigate<AddSubjectPage>(
+                new SubjectEditPayloadDTO
+                {
+                    IncidentId = SelectedIncident.IdIncident,
+                    Subject = subject
+                }
+            );
         }
     }
 }

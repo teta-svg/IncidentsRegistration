@@ -3,7 +3,6 @@ using CommunityToolkit.Mvvm.Input;
 using IncidentsRegistration.Interfaces;
 using IncidentsRegistration.Models;
 using IncidentsRegistration.Views;
-using System.Windows;
 
 namespace IncidentsRegistration.ViewModels
 {
@@ -13,6 +12,8 @@ namespace IncidentsRegistration.ViewModels
         private readonly IAuthService _authService;
         private readonly IIncidentService _incidentService;
         private readonly IExportService _exportService;
+        private readonly IContentNavigationService _contentNav;
+        private readonly INavigationService _nav;
 
         [ObservableProperty]
         private SystemUser? currentUser;
@@ -27,12 +28,16 @@ namespace IncidentsRegistration.ViewModels
             IUserService userService,
             IAuthService authService,
             IIncidentService incidentService,
-            IExportService exportService)
+            IExportService exportService, 
+            IContentNavigationService contentNav,
+            INavigationService nav)
         {
             _userService = userService;
             _authService = authService;
             _incidentService = incidentService;
             _exportService = exportService;
+            _contentNav = contentNav;
+            _nav = nav;
         }
 
         public void Initialize()
@@ -117,19 +122,37 @@ namespace IncidentsRegistration.ViewModels
         [RelayCommand]
         private void OpenSubjects()
         {
-            _nav.Navigate<IncidentSubjectsPage>();
+            _contentNav.Navigate<IncidentSubjectsPage>();
         }
 
         [RelayCommand]
         private void OpenIncidents()
         {
-            _nav.Navigate<IncidentsPage>();
+            _contentNav.Navigate<IncidentsPage>();
         }
 
         [RelayCommand]
         private void OpenActiveIncidents()
         {
-            _nav.Navigate<ActiveIncidentsPage>();
+            _contentNav.Navigate<ActiveIncidentsPage>();
+        }
+        [RelayCommand]
+        private void OpenTeams()
+        {
+            _contentNav.Navigate<ResponseTeamsPage>();
+        }
+
+        [RelayCommand]
+        private void OpenUsers()
+        {
+            _contentNav.Navigate<UsersPage>();
+        }
+
+
+        [RelayCommand]
+        private void Logout()
+        {
+            _nav.Navigate<LoginPage>();
         }
     }
 }

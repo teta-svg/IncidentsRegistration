@@ -9,10 +9,9 @@ namespace IncidentsRegistration.ViewModels
     public partial class AddDecisionViewModel : ObservableObject
     {
         private readonly IDecisionService _decisionService;
+        private readonly IContentNavigationService _nav;
 
         private int _incidentId;
-
-        public Action? OnSuccess;
 
         [ObservableProperty]
         private Decision _newDecision = new();
@@ -32,9 +31,10 @@ namespace IncidentsRegistration.ViewModels
         [ObservableProperty]
         private string? _selectedType;
 
-        public AddDecisionViewModel(IDecisionService service)
+        public AddDecisionViewModel(IDecisionService service, IContentNavigationService nav)
         {
             _decisionService = service;
+            _nav = nav;
         }
 
         public void Initialize(int incidentId, SystemUser currentUser)
@@ -138,10 +138,15 @@ namespace IncidentsRegistration.ViewModels
                     }
                 }
 
-                _decisionService.SaveDecision(NewDecision, NewCriminalCase, NewTransfer, teamLink.IdResponseTeam);
+                _decisionService.SaveDecision(
+                    NewDecision,
+                    NewCriminalCase,
+                    NewTransfer,
+                    teamLink.IdResponseTeam);
 
                 ErrorMessage = "Решение успешно сохранено!";
-                OnSuccess?.Invoke();
+
+                _nav.GoBack();
             }
             catch (Exception ex)
             {
@@ -149,5 +154,10 @@ namespace IncidentsRegistration.ViewModels
             }
         }
 
+        [RelayCommand]
+        private void Back()
+        {
+            _nav.GoBack();
+        }
     }
 }

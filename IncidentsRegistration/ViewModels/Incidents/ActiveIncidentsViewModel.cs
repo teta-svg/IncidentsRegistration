@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using IncidentsRegistration.Interfaces;
 using IncidentsRegistration.Models;
+using IncidentsRegistration.Views;
 using System.Collections.ObjectModel;
 
 namespace IncidentsRegistration.ViewModels
@@ -9,10 +10,9 @@ namespace IncidentsRegistration.ViewModels
     public partial class ActiveIncidentsViewModel : ObservableObject
     {
         private readonly IIncidentService _incidentService;
+        private readonly IContentNavigationService _nav;
 
         public ObservableCollection<Incident> ActiveIncidents { get; } = new();
-
-        public Action<int>? OnMakeDecisionRequested;
 
         [ObservableProperty]
         [NotifyCanExecuteChangedFor(nameof(MakeDecisionCommand))]
@@ -24,9 +24,10 @@ namespace IncidentsRegistration.ViewModels
         [ObservableProperty]
         private string? _errorMessage;
 
-        public ActiveIncidentsViewModel(IIncidentService incidentService)
+        public ActiveIncidentsViewModel(IIncidentService incidentService, IContentNavigationService nav)
         {
             _incidentService = incidentService;
+            _nav = nav;
         }
 
         public void Initialize(SystemUser user)
@@ -74,10 +75,13 @@ namespace IncidentsRegistration.ViewModels
         {
             ErrorMessage = string.Empty;
 
-            if (SelectedIncident != null)
-                OnMakeDecisionRequested?.Invoke(SelectedIncident.IdIncident);
-            else
+            if (SelectedIncident == null)
+            {
                 ErrorMessage = "Выберите инцидент из списка.";
+                return;
+            }
+
+            _nav.Navigate<AddDecisionPage>(SelectedIncident.IdIncident);
         }
 
         private bool HasSelection() => SelectedIncident != null;

@@ -11,7 +11,7 @@ namespace IncidentsRegistration
 {
     public partial class App : Application
     {
-        public IServiceProvider Services { get; }
+        public static IServiceProvider Services { get; private set; }
 
         public App()
         {
@@ -23,20 +23,24 @@ namespace IncidentsRegistration
             var services = new ServiceCollection();
 
             services.AddDbContextFactory<IncidentsDbContext>(options =>
-                            options.UseSqlServer("Server=.\\SQLEXPRESS;Database=Incidents_registration;Trusted_Connection=True;TrustServerCertificate=True;"));
+                options.UseSqlServer(
+                    "Server=.\\SQLEXPRESS;Database=Incidents_registration;Trusted_Connection=True;TrustServerCertificate=True;"));
 
-            // Сервисы
+            // SERVICES
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IIncidentService, IncidentService>();
             services.AddScoped<ILocationService, LocationService>();
             services.AddScoped<IResponseTeamService, ResponseTeamService>();
             services.AddScoped<ISubjectService, SubjectService>();
+            services.AddScoped<IUserService, UserService>();
+
             services.AddTransient<IExportService, ExportService>();
             services.AddTransient<IDecisionService, DecisionService>();
-            services.AddScoped<IUserService, UserService>();
-            services.AddSingleton<INavigationService, NavigationService>();
 
-            // ViewModels
+            services.AddSingleton<INavigationService, NavigationService>();
+            services.AddSingleton<IContentNavigationService, ContentNavigationService>();
+
+            // VIEWMODELS
             services.AddTransient<LoginViewModel>();
             services.AddTransient<RegisterViewModel>();
             services.AddTransient<IncidentsViewModel>();
@@ -53,7 +57,7 @@ namespace IncidentsRegistration
             services.AddTransient<IncidentDetailsViewModel>();
             services.AddTransient<IncidentSubjectsViewModel>();
 
-            // Страницы
+            // PAGES
             services.AddTransient<LoginPage>();
             services.AddTransient<RegisterPage>();
             services.AddTransient<MainAppPage>();
@@ -68,8 +72,10 @@ namespace IncidentsRegistration
             services.AddTransient<ResponseTeamEditPage>();
             services.AddTransient<UsersPage>();
             services.AddTransient<UserEditPage>();
-            services.AddTransient<IncidentSubjectsPage>();
             services.AddTransient<IncidentDetailsPage>();
+
+            // WINDOW
+            services.AddSingleton<MainWindow>();
 
             return services.BuildServiceProvider();
         }
@@ -78,10 +84,8 @@ namespace IncidentsRegistration
         {
             base.OnStartup(e);
 
-            var loginPage = Services.GetRequiredService<LoginPage>();
-            var mainWindow = new MainWindow();
-            mainWindow.MainFrame.Navigate(loginPage);
-            mainWindow.Show();
+            var window = Services.GetRequiredService<MainWindow>();
+            window.Show();
         }
     }
 }

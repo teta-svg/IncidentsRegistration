@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using IncidentsRegistration.Interfaces;
 using IncidentsRegistration.Models;
 using System.Windows;
@@ -8,13 +9,17 @@ namespace IncidentsRegistration.ViewModels
     public partial class IncidentDetailsViewModel : ObservableObject
     {
         private readonly IIncidentService _incidentService;
+        private readonly IContentNavigationService _nav;
 
         [ObservableProperty]
         private Incident? _selectedIncident;
 
-        public IncidentDetailsViewModel(IIncidentService incidentService)
+        public IncidentDetailsViewModel(
+            IIncidentService incidentService,
+            IContentNavigationService nav)
         {
             _incidentService = incidentService;
+            _nav = nav;
         }
 
         public void Initialize(int incidentId)
@@ -53,5 +58,11 @@ namespace IncidentsRegistration.ViewModels
         public Visibility TransferVisibility =>
             SelectedIncident?.Decision?.TerritorialTransfer != null ? 
             Visibility.Visible : Visibility.Collapsed;//если есть территориальная передача
+
+        [RelayCommand]
+        private void Back()
+        {
+            _nav.GoBack();
+        }
     }
 }

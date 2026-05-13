@@ -141,7 +141,7 @@
                 <Grid>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                         <Button Content="ОТМЕНА"
-                                Click="Back_Click"
+                                Command="{Binding BackCommand}"
                                 Background="{StaticResource SecondaryBlue}" 
                                 Foreground="Black" 
                                 Width="140" Height="45" 

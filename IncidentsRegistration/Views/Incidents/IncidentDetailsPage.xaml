@@ -261,7 +261,7 @@
                                 Content="НАЗАД" 
                                 Height="50" 
                                 Width="150" 
-                                Click="Back_Click" 
+                                Command="{Binding BackCommand}"
                                 Background="{StaticResource SecondaryBlue}" 
                                 Foreground="Black" 
                                 FontWeight="Bold" 
