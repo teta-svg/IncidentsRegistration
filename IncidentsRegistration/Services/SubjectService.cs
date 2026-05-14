@@ -8,21 +8,10 @@ public class SubjectService : ISubjectService
     private readonly IncidentsDbContext _context;
     public SubjectService(IncidentsDbContext context) => _context = context;
 
-    public void AddSubjectAndLinkToIncident(Subject subject, SubjectRole role)
+    public void AddSubject(Subject subject)
     {
-        using var transaction = _context.Database.BeginTransaction();
-        try
-        {
-            _context.Subjects.Add(subject);
-            _context.SaveChanges();
-
-            role.IdSubject = subject.IdSubject;
-            _context.SubjectRoles.Add(role);
-
-            _context.SaveChanges();
-            transaction.Commit();
-        }
-        catch { transaction.Rollback(); throw; }
+        _context.Subjects.Add(subject);
+        _context.SaveChanges();
     }
 
     public List<SubjectRole> GetParticipantsByIncident(int incidentId)
@@ -53,35 +42,50 @@ public class SubjectService : ISubjectService
         }
     }
 
-    public void UpdateSubjectAndRole(Subject updatedSubject, int incidentId, string roleName)
+    public void UpdateSubject(Subject updatedSubject)
     {
-        using var transaction = _context.Database.BeginTransaction();
-        try
-        {
-            var tracked = _context.Subjects.Local.FirstOrDefault(s => s.IdSubject == updatedSubject.IdSubject);
-            if (tracked != null) _context.Entry(tracked).State = EntityState.Detached;
-            updatedSubject.SubjectRoles.Clear();
+        var existing = _context.Subjects
+            .FirstOrDefault(s => s.IdSubject == updatedSubject.IdSubject);
 
-            _context.Subjects.Update(updatedSubject);
-            _context.SaveChanges();
+        if (existing == null)
+            throw new Exception("Subject not found");
 
-            var newRoleEntry = new SubjectRole
-            {
-                IdIncident = incidentId,
-                IdSubject = updatedSubject.IdSubject,
-                RoleName = roleName,
-                DateOfInvolvement = DateOnly.FromDateTime(DateTime.Today)
-            };
+        _context.Entry(existing).CurrentValues.SetValues(updatedSubject);
 
-            _context.SubjectRoles.Add(newRoleEntry);
-            _context.SaveChanges();
-
-            transaction.Commit();
-        }
-        catch
-        {
-            transaction.Rollback();
-            throw;
-        }
+        _context.SaveChanges();
     }
+
+    public void AddSubjectRole(int subjectId, int incidentId, string roleName)
+    {
+        var role = new SubjectRole
+        {
+            IdSubject = subjectId,
+            IdIncident = incidentId,
+            RoleName = roleName,
+            DateOfInvolvement = DateOnly.FromDateTime(DateTime.Today)
+        };
+
+        _context.SubjectRoles.Add(role);
+        _context.SaveChanges();
+    }
+
+    public SubjectRole? GetLastRole(int subjectId, int incidentId)
+    {
+        return _context.SubjectRoles
+            .Where(r => r.IdSubject == subjectId && r.IdIncident == incidentId)
+            .OrderByDescending(r => r.DateOfInvolvement)
+            .ThenByDescending(r => r.IdSubjectRole)
+            .FirstOrDefault();
+    }
+
+    public Subject? FindExistingSubjectByInn(string? inn)
+    {
+        if (string.IsNullOrWhiteSpace(inn))
+            return null;
+
+        return _context.Subjects
+            .FirstOrDefault(s => s.Inn == inn);
+    }
+
+
 }

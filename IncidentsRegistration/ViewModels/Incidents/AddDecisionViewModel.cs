@@ -37,10 +37,10 @@ namespace IncidentsRegistration.ViewModels
             _nav = nav;
         }
 
-        public void Initialize(int incidentId, SystemUser currentUser)
+        public void Initialize(DecisionInitDTO model)
         {
-            _incidentId = incidentId;
-            CurrentUser = currentUser;
+            _incidentId = model.IncidentId;
+            CurrentUser = model.User;
 
             NewDecision = new Decision
             {
@@ -88,7 +88,6 @@ namespace IncidentsRegistration.ViewModels
         public Visibility TransferVisibility 
             => SelectedType == "передано по территориальному признаку" ? Visibility.Visible : Visibility.Collapsed;
 
-        //обновление интерфейса при смене типа решения
         partial void OnSelectedTypeChanged(string? value)
         {
             NewDecision.DecisionType = value ?? "";

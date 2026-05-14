@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using IncidentsRegistration.Interfaces;
 using IncidentsRegistration.Models;
+using IncidentsRegistration.Services;
 using IncidentsRegistration.Views;
 using System.Collections.ObjectModel;
 
@@ -11,6 +12,7 @@ namespace IncidentsRegistration.ViewModels
     {
         private readonly IIncidentService _incidentService;
         private readonly IContentNavigationService _nav;
+        private readonly IUserService _userService;
 
         public ObservableCollection<Incident> ActiveIncidents { get; } = new();
 
@@ -24,50 +26,46 @@ namespace IncidentsRegistration.ViewModels
         [ObservableProperty]
         private string? _errorMessage;
 
-        public ActiveIncidentsViewModel(IIncidentService incidentService, IContentNavigationService nav)
+        public ActiveIncidentsViewModel(
+            IIncidentService incidentService,
+            IContentNavigationService nav,
+            IUserService userService)
         {
             _incidentService = incidentService;
             _nav = nav;
+            _userService = userService;
         }
 
-        public void Initialize(SystemUser user)
+        public void Initialize()
         {
-            CurrentUser = user;
+            CurrentUser = _userService.CurrentUser;
             LoadData();
         }
 
         [RelayCommand]
         public void LoadData()
         {
-            SelectedIncident = null;
             ErrorMessage = string.Empty;
+            ActiveIncidents.Clear();
 
-            try
+            var user = _userService.CurrentUser;
+            if (user == null) return;
+
+            var teamId = user.SystemUserResponseTeams.FirstOrDefault()?.IdResponseTeam;
+
+            if (!teamId.HasValue)
             {
-                ActiveIncidents.Clear();
-
-                if (CurrentUser == null) return;
-
-                var teamId = CurrentUser.SystemUserResponseTeams.FirstOrDefault()?.IdResponseTeam;
-
-                if (teamId.HasValue)
-                {
-                    var data = _incidentService.GetActiveIncidentsByTeam(teamId.Value);
-                    foreach (var item in data)
-                        ActiveIncidents.Add(item);
-
-                    if (ActiveIncidents.Count == 0)
-                        ErrorMessage = "Активных инцидентов для вашей команды нет.";
-                }
-                else
-                {
-                    ErrorMessage = "Вы не привязаны ни к одной группе реагирования.";
-                }
+                ErrorMessage = "Вы не привязаны ни к одной группе реагирования.";
+                return;
             }
-            catch (Exception ex)
-            {
-                ErrorMessage = "Ошибка при загрузке данных: " + ex.Message;
-            }
+
+            var data = _incidentService.GetActiveIncidentsByTeam(teamId.Value);
+
+            foreach (var item in data)
+                ActiveIncidents.Add(item);
+
+            if (ActiveIncidents.Count == 0)
+                ErrorMessage = "Активных инцидентов для вашей команды нет.";
         }
 
         [RelayCommand(CanExecute = nameof(HasSelection))]
@@ -81,7 +79,11 @@ namespace IncidentsRegistration.ViewModels
                 return;
             }
 
-            _nav.Navigate<AddDecisionPage>(SelectedIncident.IdIncident);
+            _nav.Navigate<AddDecisionPage>(new DecisionInitDTO
+            {
+                IncidentId = SelectedIncident.IdIncident,
+                User = _userService.CurrentUser
+            });
         }
 
         private bool HasSelection() => SelectedIncident != null;

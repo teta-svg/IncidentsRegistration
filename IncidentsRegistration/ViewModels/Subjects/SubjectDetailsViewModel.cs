@@ -35,6 +35,8 @@ namespace IncidentsRegistration.ViewModels
 
         public void LoadParticipants()
         {
+            if (CurrentIncident == null) return;
+
             var allRoles = _subjectService.GetParticipantsByIncident(CurrentIncident.IdIncident);
 
             var latestStats = allRoles
@@ -47,8 +49,6 @@ namespace IncidentsRegistration.ViewModels
 
             UniqueParticipants = new ObservableCollection<SubjectRole>(latestStats);
         }
-
-
 
         [RelayCommand]
         private void RemoveParticipant(SubjectRole role)
@@ -75,16 +75,17 @@ namespace IncidentsRegistration.ViewModels
         [RelayCommand]
         private void UpdateParticipant(SubjectRole role)
         {
-            if (role?.IdSubjectNavigation == null)
-                return;
+            if (role == null) return;
 
             _nav.Navigate<AddSubjectPage>(
                 new SubjectEditPayloadDTO
                 {
                     IncidentId = CurrentIncident.IdIncident,
-                    Subject = role.IdSubjectNavigation
+                    Subject = role.IdSubjectNavigation,
+                    CurrentRole = role
                 });
         }
+
 
         [RelayCommand]
         private void Back()

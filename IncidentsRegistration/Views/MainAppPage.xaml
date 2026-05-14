@@ -196,8 +196,9 @@
                         BorderThickness="2" 
                         Background="{StaticResource SecondaryBlue}" 
                         Opacity="0.05"/>
-                <Frame x:Name="ContentFrame" 
-                       NavigationUIVisibility="Hidden"/>
+                <Frame x:Name="ContentFrame"
+                       NavigationUIVisibility="Hidden"
+                       JournalOwnership="OwnsJournal"/>
             </Grid>
         </Grid>
     </Grid>

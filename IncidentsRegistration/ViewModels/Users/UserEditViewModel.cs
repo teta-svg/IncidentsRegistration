@@ -10,6 +10,7 @@ namespace IncidentsRegistration.ViewModels
     public partial class UserEditViewModel : ObservableObject
     {
         private readonly IUserService _userService;
+        private readonly IContentNavigationService _navigationService;
 
         [ObservableProperty]
         private SystemUser currentUser = new();
@@ -39,11 +40,10 @@ namespace IncidentsRegistration.ViewModels
             "руководитель группы"
         };
 
-        public Action? OnRequestGoBack;
-
-        public UserEditViewModel(IUserService userService)
+        public UserEditViewModel(IUserService userService, IContentNavigationService navigationService)
         {
             _userService = userService;
+            _navigationService = navigationService;
 
             Teams = new ObservableCollection<ResponseTeam>(
                 _userService.GetAllTeams());
@@ -76,7 +76,7 @@ namespace IncidentsRegistration.ViewModels
 
                 var linkedTeamId = user
                     .SystemUserResponseTeams
-                    .FirstOrDefault()
+                    ?.FirstOrDefault()
                     ?.IdResponseTeam;
 
                 if (linkedTeamId != null)
@@ -87,7 +87,6 @@ namespace IncidentsRegistration.ViewModels
             }
 
             SelectedRole = CurrentUser.UserRole;
-
             UpdateVisibility();
         }
 
@@ -116,8 +115,7 @@ namespace IncidentsRegistration.ViewModels
                     return;
                 }
 
-                if (CurrentUser.UserRole == "руководитель группы"
-                    && SelectedTeam == null)
+                if (CurrentUser.UserRole == "руководитель группы" && SelectedTeam == null)
                 {
                     ErrorMessage = "Выберите группу";
                     return;
@@ -125,34 +123,27 @@ namespace IncidentsRegistration.ViewModels
 
                 if (CurrentUser.IdUser == 0)
                 {
-                    _userService.AddUser(
-                        CurrentUser,
-                        SelectedTeam?.IdResponseTeam);
-
+                    _userService.AddUser(CurrentUser, SelectedTeam?.IdResponseTeam);
                     ErrorMessage = "Пользователь создан";
                 }
                 else
                 {
-                    _userService.UpdateUser(
-                        CurrentUser,
-                        SelectedTeam?.IdResponseTeam);
-
+                    _userService.UpdateUser(CurrentUser, SelectedTeam?.IdResponseTeam);
                     ErrorMessage = "Данные обновлены";
                 }
 
-                OnRequestGoBack?.Invoke();
+                _navigationService.GoBack();
             }
             catch (Exception ex)
             {
-                ErrorMessage =
-                    ex.InnerException?.Message ?? ex.Message;
+                ErrorMessage = ex.InnerException?.Message ?? ex.Message;
             }
         }
 
         [RelayCommand]
         private void Back()
         {
-            OnRequestGoBack?.Invoke();
+            _navigationService.GoBack();
         }
 
         private void UpdateVisibility()

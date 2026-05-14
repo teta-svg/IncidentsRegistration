@@ -28,17 +28,39 @@ namespace IncidentsRegistration.Services
 
             var page = _services.GetRequiredService<T>();
 
-            if (parameter != null)
+            _frame.Navigate(page);
+
+            var vm = page.DataContext;
+            if (vm == null) return;
+
+            var methods = vm.GetType()
+                .GetMethods()
+                .Where(m => m.Name == "Initialize");
+
+            foreach (var method in methods)
             {
-                var vm = page.DataContext;
-                if (vm != null)
+                var parameters = method.GetParameters();
+
+                try
                 {
-                    var init = vm.GetType().GetMethod("Initialize");
-                    init?.Invoke(vm, new[] { parameter });
+                    if (parameters.Length == 0 && parameter == null)
+                    {
+                        method.Invoke(vm, null);
+                        return;
+                    }
+
+                    if (parameters.Length == 1 && parameter != null &&
+                        parameters[0].ParameterType.IsAssignableFrom(parameter.GetType()))
+                    {
+                        method.Invoke(vm, new[] { parameter });
+                        return;
+                    }
+                }
+                catch
+                {
+                    
                 }
             }
-
-            _frame.Navigate(page);
         }
 
         public void GoBack()

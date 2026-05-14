@@ -8,6 +8,7 @@ namespace IncidentsRegistration.ViewModels
     public partial class ResponseTeamEditViewModel : ObservableObject
     {
         private readonly IResponseTeamService _teamService;
+        private readonly IContentNavigationService _navigationService;
 
         [ObservableProperty]
         private ResponseTeam currentTeam = new();
@@ -18,11 +19,12 @@ namespace IncidentsRegistration.ViewModels
         [ObservableProperty]
         private string errorMessage = string.Empty;
 
-        public Action? OnRequestGoBack;
-
-        public ResponseTeamEditViewModel(IResponseTeamService teamService)
+        public ResponseTeamEditViewModel(
+            IResponseTeamService teamService,
+            IContentNavigationService navigationService)
         {
             _teamService = teamService;
+            _navigationService = navigationService;
         }
 
         public void Initialize(ResponseTeam? team = null)
@@ -74,7 +76,7 @@ namespace IncidentsRegistration.ViewModels
                     ErrorMessage = "Данные обновлены";
                 }
 
-                OnRequestGoBack?.Invoke();
+                _navigationService.GoBack();
             }
             catch (Exception ex)
             {
@@ -85,7 +87,7 @@ namespace IncidentsRegistration.ViewModels
         [RelayCommand]
         private void Back()
         {
-            OnRequestGoBack?.Invoke();
+            _navigationService.GoBack();
         }
     }
 }

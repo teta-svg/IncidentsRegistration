@@ -9,7 +9,9 @@ public partial class AddSubjectViewModel : ObservableObject
     private readonly ISubjectService _subjectService;
     private readonly IContentNavigationService _nav;
     private int _incidentId;
+    private int? _currentRoleId;
     private bool _isEditMode;
+    private bool _isAddMode;
 
     [ObservableProperty]
     private Subject _currentSubject = new();
@@ -24,7 +26,9 @@ public partial class AddSubjectViewModel : ObservableObject
 
     public Visibility RoleSelectionVisibility => Visibility.Visible;
 
-    private bool IsEditMode => CurrentSubject.IdSubject > 0;
+    public bool IsEditMode => _isEditMode;
+
+    public bool IsAddMode => _isAddMode;
 
     public string ButtonText => IsEditMode ? "СОХРАНИТЬ ИЗМЕНЕНИЯ" : "ЗАРЕГИСТРИРОВАТЬ";
 
@@ -39,10 +43,19 @@ public partial class AddSubjectViewModel : ObservableObject
     public void Initialize(SubjectEditPayloadDTO payload)
     {
         _incidentId = payload.IncidentId;
-
         _isEditMode = payload.Subject != null;
-
+        _isAddMode = payload.Subject == null;
         CurrentSubject = payload.Subject ?? new Subject();
+
+        if (_isEditMode && payload.CurrentRole != null)
+        {
+            SelectedRole = payload.CurrentRole.RoleName;
+            _currentRoleId = payload.CurrentRole.IdSubjectRole;
+        }
+        else
+        {
+            SelectedRole = null;
+        }
     }
 
     [RelayCommand]
@@ -50,10 +63,7 @@ public partial class AddSubjectViewModel : ObservableObject
     {
         ErrorMessage = string.Empty;
 
-        if (CurrentSubject == null)
-            CurrentSubject = new Subject();
-
-        if (string.IsNullOrWhiteSpace(CurrentSubject.LastName))
+        if (string.IsNullOrWhiteSpace(CurrentSubject?.LastName))
         {
             ErrorMessage = "Заполните фамилию!";
             return;
@@ -69,18 +79,30 @@ public partial class AddSubjectViewModel : ObservableObject
         {
             if (_isEditMode)
             {
-                _subjectService.UpdateSubjectAndRole(CurrentSubject, _incidentId, SelectedRole);
+                _subjectService.UpdateSubject(CurrentSubject);
             }
             else
             {
-                var roleLink = new SubjectRole
-                {
-                    IdIncident = _incidentId,
-                    RoleName = SelectedRole,
-                    DateOfInvolvement = DateOnly.FromDateTime(DateTime.Today)
-                };
+                var existing = _subjectService.FindExistingSubjectByInn(CurrentSubject.Inn);
 
-                _subjectService.AddSubjectAndLinkToIncident(CurrentSubject, roleLink);
+                if (existing != null)
+                {
+                    CurrentSubject.IdSubject = existing.IdSubject;
+                }
+                else
+                {
+                    _subjectService.AddSubject(CurrentSubject);
+                }
+            }
+
+            var lastRole = _subjectService.GetLastRole(CurrentSubject.IdSubject, _incidentId);
+
+            if (lastRole == null || lastRole.RoleName != SelectedRole)
+            {
+                _subjectService.AddSubjectRole(
+                    CurrentSubject.IdSubject,
+                    _incidentId,
+                    SelectedRole);
             }
 
             _nav.GoBack();
@@ -91,9 +113,35 @@ public partial class AddSubjectViewModel : ObservableObject
         }
     }
 
-    [RelayCommand]
-    private void Back()
+    [RelayCommand] private void Back() => _nav.GoBack();
+
+    public void TryLoadByInn()
     {
-        _nav.GoBack();
+        if (string.IsNullOrWhiteSpace(CurrentSubject.Inn))
+            return;
+
+        var existing = _subjectService.FindExistingSubjectByInn(CurrentSubject.Inn);
+
+        if (existing != null)
+        {
+            FillSubject(existing);
+        }
+    }
+
+    private void FillSubject(Subject src)
+    {
+        CurrentSubject = new Subject
+        {
+            IdSubject = src.IdSubject,
+            LastName = src.LastName,
+            FirstName = src.FirstName,
+            Patronymic = src.Patronymic,
+            NumberOfConvictions = src.NumberOfConvictions,
+            Settlement = src.Settlement,
+            Street = src.Street,
+            House = src.House,
+            Room = src.Room,
+            Inn = src.Inn
+        };
     }
 }

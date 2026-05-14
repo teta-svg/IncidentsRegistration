@@ -4,10 +4,19 @@ namespace IncidentsRegistration.Interfaces
 {
     public interface ISubjectService
     {
-        void AddSubjectAndLinkToIncident(Subject subject, SubjectRole role);
+        void UpdateSubject(Subject subject);
+
+        void AddSubjectRole(int subjectId, int incidentId, string roleName);
+
+        public void AddSubject(Subject subject);
+
         List<SubjectRole> GetParticipantsByIncident(int incidentId);
+
         void RemoveRolesForPersonInIncident(int id);
-        void UpdateSubjectAndRole(Subject updatedSubject, int incidentId, string roleName);
+
+        SubjectRole? GetLastRole(int subjectId, int incidentId);
+
+        Subject? FindExistingSubjectByInn(string? inn);
     }
 
 }

@@ -7,6 +7,8 @@
       Title="Регистрация участника">
 
     <Page.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+
         <Style TargetType="TextBox">
             <Setter Property="Padding" Value="10,10"/>
             <Setter Property="Background" Value="White"/>
@@ -76,9 +78,20 @@
                                 </StackPanel>
                             </UniformGrid>
 
-                            <TextBlock Text="Количество судимостей" Style="{StaticResource LabelStyle}"/>
-                            <TextBox Width="120" HorizontalAlignment="Left" 
-                                     Text="{Binding ConvictionsCount}"/>
+                            <UniformGrid Columns="2">
+
+                                <StackPanel Margin="0,0,10,0">
+                                    <TextBlock Text="Количество судимостей" Style="{StaticResource LabelStyle}"/>
+                                    <TextBox Width="167" HorizontalAlignment="Left"
+                                             Text="{Binding CurrentSubject.NumberOfConvictions, UpdateSourceTrigger=PropertyChanged}"/>
+                                </StackPanel>
+
+                                <StackPanel>
+                                    <TextBlock Text="ИНН" Style="{StaticResource LabelStyle}"/>
+                                    <TextBox Text="{Binding CurrentSubject.Inn}" IsReadOnly="{Binding IsEditMode}" LostFocus="Inn_LostFocus"/>
+                                </StackPanel>
+
+                            </UniformGrid>
                         </StackPanel>
                     </Border>
 

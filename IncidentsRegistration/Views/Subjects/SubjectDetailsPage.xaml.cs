@@ -9,6 +9,8 @@ namespace IncidentsRegistration.Views
         {
             InitializeComponent();
             DataContext = vm;
+
+            Loaded += (s, e) => vm.LoadParticipants();
         }
     }
 }

@@ -134,8 +134,15 @@ namespace IncidentsRegistration.ViewModels
         [RelayCommand]
         private void OpenActiveIncidents()
         {
-            _contentNav.Navigate<ActiveIncidentsPage>();
+            if (CurrentUser == null)
+            {
+                ErrorMessage = "Пользователь не найден";
+                return;
+            }
+
+            _contentNav.Navigate<ActiveIncidentsPage>(CurrentUser);
         }
+
         [RelayCommand]
         private void OpenTeams()
         {

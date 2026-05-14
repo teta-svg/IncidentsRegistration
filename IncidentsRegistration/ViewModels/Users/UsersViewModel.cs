@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using IncidentsRegistration.Interfaces;
 using IncidentsRegistration.Models;
+using IncidentsRegistration.Views;
 using System.Collections.ObjectModel;
 using System.Windows;
 
@@ -10,11 +11,9 @@ namespace IncidentsRegistration.ViewModels
     public partial class UsersViewModel : ObservableObject
     {
         private readonly IUserService _userService;
+        private readonly IContentNavigationService _navigationService;
 
         public ObservableCollection<SystemUser> Users { get; } = new();
-
-        public Action? OnAddRequested;
-        public Action<SystemUser>? OnUpdateRequested;
 
         [ObservableProperty]
         private SystemUser? selectedUser;
@@ -22,9 +21,10 @@ namespace IncidentsRegistration.ViewModels
         [ObservableProperty]
         private string errorMessage = string.Empty;
 
-        public UsersViewModel(IUserService userService)
+        public UsersViewModel(IUserService userService, IContentNavigationService navigationService)
         {
             _userService = userService;
+            _navigationService = navigationService;
         }
 
         [RelayCommand]
@@ -48,15 +48,14 @@ namespace IncidentsRegistration.ViewModels
             }
             catch (Exception ex)
             {
-                ErrorMessage =
-                    ex.InnerException?.Message ?? ex.Message;
+                ErrorMessage = ex.InnerException?.Message ?? ex.Message;
             }
         }
 
         [RelayCommand]
         private void Add()
         {
-            OnAddRequested?.Invoke();
+            _navigationService.Navigate<UserEditPage>();
         }
 
         [RelayCommand]
@@ -70,7 +69,7 @@ namespace IncidentsRegistration.ViewModels
                 return;
             }
 
-            OnUpdateRequested?.Invoke(SelectedUser);
+            _navigationService.Navigate<UserEditPage>(SelectedUser);
         }
 
         [RelayCommand]
@@ -103,8 +102,7 @@ namespace IncidentsRegistration.ViewModels
             }
             catch (Exception ex)
             {
-                ErrorMessage =
-                    ex.InnerException?.Message ?? ex.Message;
+                ErrorMessage = ex.InnerException?.Message ?? ex.Message;
             }
         }
     }
