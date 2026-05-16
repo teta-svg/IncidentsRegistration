@@ -1,3 +1,4 @@
 <Solution>
+  <Project Path="IncidentsRegistration.Tests/IncidentsRegistration.Tests.csproj" Id="bb919fb7-1d0e-493f-b87a-3d74b7b935c6" />
   <Project Path="IncidentsRegistration/IncidentsRegistration.csproj" />
 </Solution>

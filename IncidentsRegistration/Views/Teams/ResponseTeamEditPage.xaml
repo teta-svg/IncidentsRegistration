@@ -87,12 +87,12 @@
                             <Border Background="{StaticResource SecondaryYellow}" Padding="12,5" HorizontalAlignment="Left" Margin="0,0,0,15">
                                 <TextBlock Text="ОБЩИЕ СВЕДЕНИЯ" Foreground="Black" FontWeight="Bold" FontSize="10"/>
                             </Border>
-
+    
                             <TextBlock Text="НАЗВАНИЕ КОМАНДЫ" Style="{StaticResource LabelStyle}"/>
-                            <TextBox Text="{Binding CurrentTeam.NameTeam}" Height="40"/>
+                            <TextBox Text="{Binding CurrentTeam.NameTeam}" Height="40" MaxLength="50"/>
 
                             <TextBlock Text="КОЛИЧЕСТВО СОТРУДНИКОВ" Style="{StaticResource LabelStyle}"/>
-                            <TextBox Text="{Binding CurrentTeam.NumberOfPeople}" Height="40" Width="120" HorizontalAlignment="Left"/>
+                            <TextBox Text="{Binding CurrentTeam.NumberOfPeople, UpdateSourceTrigger=PropertyChanged}" Height="40" Width="120" HorizontalAlignment="Left"/>
                         </StackPanel>
                     </Border>
 
@@ -103,16 +103,19 @@
                             </Border>
 
                             <TextBlock Text="ФАМИЛИЯ" Style="{StaticResource LabelStyle}"/>
-                            <TextBox Text="{Binding CurrentTeam.DirectorLastName}" Height="40"/>
+                            <TextBox Text="{Binding CurrentTeam.DirectorLastName}" Height="40"
+                                     MaxLength="50"/>
 
                             <UniformGrid Columns="2" Margin="0,5,0,0">
                                 <StackPanel Margin="0,0,10,0">
                                     <TextBlock Text="ИМЯ" Style="{StaticResource LabelStyle}"/>
-                                    <TextBox Text="{Binding CurrentTeam.DirectorFirstName}" Height="40"/>
+                                    <TextBox Text="{Binding CurrentTeam.DirectorFirstName}" Height="40"
+                                              MaxLength="50"/>
                                 </StackPanel>
                                 <StackPanel>
                                     <TextBlock Text="ОТЧЕСТВО" Style="{StaticResource LabelStyle}"/>
-                                    <TextBox Text="{Binding CurrentTeam.DirectorPatronymic}" Height="40"/>
+                                    <TextBox Text="{Binding CurrentTeam.DirectorPatronymic}" Height="40"
+                                              MaxLength="50"/>
                                 </StackPanel>
                             </UniformGrid>
                         </StackPanel>

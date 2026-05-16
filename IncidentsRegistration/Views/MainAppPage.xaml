@@ -30,8 +30,8 @@
         </DrawingBrush>
 
         <Style x:Key="MenuButtonStyle" TargetType="Button">
-            <Setter Property="Height" Value="48"/>
-            <Setter Property="Margin" Value="0,2,0,2"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="Margin" Value="0,1,0,1"/>
             <Setter Property="Background" Value="{StaticResource SecondaryYellow}"/>
             <Setter Property="Foreground" Value="Black"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
@@ -89,10 +89,8 @@
                                 Margin="0,0,0,10">
 
                             <Image Source="/Resources/logo.png"
-                                   Width="120"
-                                   Height="120"
                                    Stretch="Uniform" 
-                                   Margin="-28,-25,-27,-30"/>
+                                   Margin="-9,-5,-9,-5"/>
                         </Border>
                         <TextBlock Text="Центр Мониторинга Безопасности" 
                                    FontSize="24" 
@@ -175,6 +173,45 @@
                                 <Rectangle Fill="{StaticResource SecondaryYellow}" 
                                            Width="4" 
                                            HorizontalAlignment="Right"/>
+                            </Grid>
+                        </Border>
+
+                        <Border Background="{StaticResource SecondaryYellow}"
+                                BorderBrush="{StaticResource PrimaryPink}"
+                                BorderThickness="2"
+                                Padding="10"
+                                Margin="0,0,0,10"
+                                Visibility="{Binding IsLead, Converter={StaticResource BoolToVis}}">
+
+                            <Grid>
+                                <StackPanel>
+                                    <TextBlock Text="ГРУППА РЕАГИРОВАНИЯ"
+                                               FontSize="9"
+                                               FontWeight="Bold"
+                                               Foreground="Black"/>
+
+                                    <TextBlock Text="{Binding TeamName}"
+                                               FontSize="14"
+                                               FontWeight="Bold"
+                                               Foreground="Black"
+                                               Margin="0,2,0,8"
+                                               TextTrimming="CharacterEllipsis"
+                                               MaxWidth="220"
+                                               ToolTip="{Binding TeamName}"/>
+
+                                    <TextBlock Text="РУКОВОДИТЕЛЬ ГРУППЫ"
+                                               FontSize="9"
+                                               FontWeight="Bold"
+                                               Foreground="Black"/>
+
+                                    <TextBlock Text="{Binding TeamLeadName}"
+                                               FontWeight="Bold"
+                                               Foreground="Black"
+                                               TextTrimming="CharacterEllipsis"
+                                               TextWrapping="NoWrap"
+                                               MaxWidth="220"
+                                               ToolTip="{Binding TeamLeadName}"/>
+                                </StackPanel>
                             </Grid>
                         </Border>
 

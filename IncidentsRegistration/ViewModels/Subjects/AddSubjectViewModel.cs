@@ -75,6 +75,18 @@ public partial class AddSubjectViewModel : ObservableObject
             return;
         }
 
+        if (CurrentSubject?.NumberOfConvictions <= 0)
+        {
+            ErrorMessage = "Количество судимостей должно быть положительным числом";
+            return;
+        }
+
+        if (CurrentSubject?.Inn.Length != 12)
+        {
+            ErrorMessage = "ИНН должен содержать 12 цифр";
+            return;
+        }
+
         try
         {
             if (_isEditMode)

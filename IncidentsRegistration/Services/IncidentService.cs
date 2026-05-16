@@ -57,6 +57,13 @@ namespace IncidentsRegistration.Services
                 .ToList();
         }
 
+        public List<Incident> GetIncidentsByTeam(int responseTeamId)
+        {
+            return BaseQuery()
+                .Where(i => i.IdResponseTeam == responseTeamId)
+                .ToList();
+        }
+
         public Incident? GetFullIncidentDetails(int incidentId)
         {
             var incident = _context.Incidents

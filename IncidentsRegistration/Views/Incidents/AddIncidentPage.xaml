@@ -97,7 +97,7 @@
                                     <StackPanel>
                                         <TextBlock Text="Время" 
                                                    Style="{StaticResource LabelStyle}"/>
-                                        <TextBox Text="{Binding DisplayTime, StringFormat=\{0:HH:mm\}}"/>
+                                        <TextBox Text="{Binding DisplayTime, StringFormat=\{0:HH:mm\}}" IsReadOnly="True"/>
                                     </StackPanel>
                                 </UniformGrid>
                             </StackPanel>
@@ -119,24 +119,30 @@
                                            FontWeight="Bold" FontSize="16" 
                                            Foreground="Black" Margin="0,0,0,15"/>
                                 <TextBlock Text="Тип инцидента" Style="{StaticResource LabelStyle}"/>
-                                <TextBox Text="{Binding NewIncident.TypeOfIncident}"/>
+                                <TextBox Text="{Binding NewIncident.TypeOfIncident}"
+                                          MaxLength="50"/>
                                 <TextBlock Text="Регион / Область" Style="{StaticResource LabelStyle}"/>
-                                <TextBox Text="{Binding NewLocation.Region}"/>
+                                <TextBox Text="{Binding NewLocation.Region}"
+                                          MaxLength="50"/>
                                 <TextBlock Text="Город / Населенный пункт" Style="{StaticResource LabelStyle}"/>
-                                <TextBox Text="{Binding NewLocation.Settlement}"/>
+                                <TextBox Text="{Binding NewLocation.Settlement}"
+                                          MaxLength="50"/>
                             </StackPanel>
 
                             <StackPanel Grid.Column="2">
                                 <TextBlock Text="Улица" Style="{StaticResource LabelStyle}"/>
-                                <TextBox Text="{Binding NewLocation.Street}"/>
+                                <TextBox Text="{Binding NewLocation.Street}"
+                                          MaxLength="50"/>
                                 <UniformGrid Columns="2">
                                     <StackPanel Margin="0,0,10,0">
                                         <TextBlock Text="Дом" Style="{StaticResource LabelStyle}"/>
-                                        <TextBox Text="{Binding NewLocation.House}"/>
+                                        <TextBox Text="{Binding NewLocation.House}"
+                                                  MaxLength="5"/>
                                     </StackPanel>
                                     <StackPanel>
                                         <TextBlock Text="Кв/Оф" Style="{StaticResource LabelStyle}"/>
-                                        <TextBox Text="{Binding NewLocation.Room}"/>
+                                        <TextBox Text="{Binding NewLocation.Room}"
+                                                  MaxLength="5"/>
                                     </StackPanel>
                                 </UniformGrid>
                                 <UniformGrid Columns="2">

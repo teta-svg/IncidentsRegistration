@@ -74,12 +74,19 @@ namespace IncidentsRegistration.Services
 
         public void DeleteUser(int userId)
         {
-            var user = _context.SystemUsers.Find(userId);
-            if (user != null)
-            {
-                _context.SystemUsers.Remove(user);
-                _context.SaveChanges();
-            }
+            var user = _context.SystemUsers
+                .Include(u => u.SystemUserResponseTeams)
+                .FirstOrDefault(u => u.IdUser == userId);
+
+            if (user == null)
+                return;
+
+            _context.SystemUserResponseTeams
+                .RemoveRange(user.SystemUserResponseTeams);
+
+            _context.SystemUsers.Remove(user);
+
+            _context.SaveChanges();
         }
         public SystemUser? CurrentUser { get; set; }
     }

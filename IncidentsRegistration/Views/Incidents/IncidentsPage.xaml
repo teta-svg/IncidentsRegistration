@@ -109,7 +109,8 @@
                                      Command="{Binding SortByCommand}"
                                      CommandParameter="IdResponseTeamNavigation.NameTeam"
                                      Foreground="Black" 
-                                     FontWeight="Medium"/>
+                                     FontWeight="Medium"
+                                     Visibility="{Binding CanGroup, Converter={StaticResource BoolToVis}}"/>
                     </StackPanel>
                 </StackPanel>
 

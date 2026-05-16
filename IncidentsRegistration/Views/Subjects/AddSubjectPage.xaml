@@ -65,16 +65,19 @@
                             </StackPanel>
 
                             <TextBlock Text="Фамилия" Style="{StaticResource LabelStyle}"/>
-                            <TextBox Text="{Binding CurrentSubject.LastName}"/>
+                            <TextBox Text="{Binding CurrentSubject.LastName}"
+                                      MaxLength="50"/>
 
                             <UniformGrid Columns="2">
                                 <StackPanel Margin="0,0,10,0">
                                     <TextBlock Text="Имя" Style="{StaticResource LabelStyle}"/>
-                                    <TextBox Text="{Binding CurrentSubject.FirstName}"/>
+                                    <TextBox Text="{Binding CurrentSubject.FirstName}"
+                                              MaxLength="50"/>
                                 </StackPanel>
                                 <StackPanel>
                                     <TextBlock Text="Отчество" Style="{StaticResource LabelStyle}"/>
-                                    <TextBox Text="{Binding CurrentSubject.Patronymic}"/>
+                                    <TextBox Text="{Binding CurrentSubject.Patronymic}"
+                                              MaxLength="50"/>
                                 </StackPanel>
                             </UniformGrid>
 
@@ -88,7 +91,7 @@
 
                                 <StackPanel>
                                     <TextBlock Text="ИНН" Style="{StaticResource LabelStyle}"/>
-                                    <TextBox Text="{Binding CurrentSubject.Inn}" IsReadOnly="{Binding IsEditMode}" LostFocus="Inn_LostFocus"/>
+                                    <TextBox Text="{Binding CurrentSubject.Inn}" IsReadOnly="{Binding IsEditMode}" LostFocus="Inn_LostFocus"  MaxLength="12"/>
                                 </StackPanel>
 
                             </UniformGrid>
@@ -105,19 +108,23 @@
                             </Border>
 
                             <TextBlock Text="Населенный пункт" Style="{StaticResource LabelStyle}"/>
-                            <TextBox Text="{Binding CurrentSubject.Settlement}"/>
+                            <TextBox Text="{Binding CurrentSubject.Settlement}"
+                                      MaxLength="50"/>
 
                             <TextBlock Text="Улица" Style="{StaticResource LabelStyle}"/>
-                            <TextBox Text="{Binding CurrentSubject.Street}"/>
+                            <TextBox Text="{Binding CurrentSubject.Street}"
+                                      MaxLength="50"/>
 
                             <UniformGrid Columns="2">
                                 <StackPanel Margin="0,0,10,0">
                                     <TextBlock Text="Дом" Style="{StaticResource LabelStyle}"/>
-                                    <TextBox Text="{Binding CurrentSubject.House}"/>
+                                    <TextBox Text="{Binding CurrentSubject.House}"
+                                              MaxLength="5"/>
                                 </StackPanel>
                                 <StackPanel>
                                     <TextBlock Text="Квартира" Style="{StaticResource LabelStyle}"/>
-                                    <TextBox Text="{Binding CurrentSubject.Room}"/>
+                                    <TextBox Text="{Binding CurrentSubject.Room}"
+                                              MaxLength="5"/>
                                 </StackPanel>
                             </UniformGrid>
                         </StackPanel>

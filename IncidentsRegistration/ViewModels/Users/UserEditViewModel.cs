@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using IncidentsRegistration.Interfaces;
 using IncidentsRegistration.Models;
 using System.Collections.ObjectModel;
+using System.Text.RegularExpressions;
 using System.Windows;
 
 namespace IncidentsRegistration.ViewModels
@@ -112,6 +113,18 @@ namespace IncidentsRegistration.ViewModels
                 if (string.IsNullOrWhiteSpace(CurrentUser.UserPassword))
                 {
                     ErrorMessage = "Введите пароль";
+                    return;
+                }
+
+                var passwordGuideline =
+                @"^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^]).{6,}$";
+
+                if (!Regex.IsMatch(
+                        CurrentUser.UserPassword,
+                        passwordGuideline))
+                {
+                    ErrorMessage =
+                        "Пароль слишком простой!";
                     return;
                 }
 

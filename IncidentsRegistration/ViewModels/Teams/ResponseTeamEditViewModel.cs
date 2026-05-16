@@ -65,6 +65,12 @@ namespace IncidentsRegistration.ViewModels
                     return;
                 }
 
+                if (CurrentTeam.NumberOfPeople <= 0)
+                {
+                    ErrorMessage = "Количество людей должно быть положительным числом";
+                    return;
+                }
+
                 if (CurrentTeam.IdResponseTeam == 0)
                 {
                     _teamService.AddTeam(CurrentTeam);

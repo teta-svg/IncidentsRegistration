@@ -73,7 +73,8 @@
 
                             <TextBlock Text="Правовое основание" 
                                        Style="{StaticResource LabelStyle}"/>
-                            <TextBox Text="{Binding NewDecision.LegalBasis}"/>
+                            <TextBox Text="{Binding NewDecision.LegalBasis}"
+                                      MaxLength="50"/>
 
                             <TextBlock Text="Дата принятия решения" 
                                        Style="{StaticResource LabelStyle}"/>
@@ -100,7 +101,8 @@
                                 </StackPanel>
                                 <StackPanel Grid.Column="1">
                                     <TextBlock Text="Квалификация (Статья)" Style="{StaticResource LabelStyle}"/>
-                                    <TextBox Text="{Binding NewCriminalCase.Qualification}"/>
+                                    <TextBox Text="{Binding NewCriminalCase.Qualification}"
+                                              MaxLength="50"/>
                                 </StackPanel>
                             </Grid>
                         </StackPanel>
@@ -118,7 +120,7 @@
                                        Foreground="Black" 
                                        Margin="0,0,0,15"/>
                             <TextBlock Text="Подразделение" Style="{StaticResource LabelStyle}"/>
-                            <TextBox Text="{Binding NewTransfer.Division}" Margin="0,0,0,10"/>
+                            <TextBox Text="{Binding NewTransfer.Division}" Margin="0,0,0,10" MaxLength="50"/>
                             <TextBlock Text="Дата передачи материалов" Style="{StaticResource LabelStyle}"/>
                             <DatePicker SelectedDate="{Binding UI_TransferDate}"/>
                         </StackPanel>

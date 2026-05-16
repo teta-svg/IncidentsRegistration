@@ -89,25 +89,77 @@
                            Margin="0,0,0,8"
                            Foreground="Black"/>
 
-                <PasswordBox x:Name="PasswordBox"
-                             VerticalContentAlignment="Center"
-                             Height="55"
-                             FontSize="18"
-                             Background="{StaticResource SecondaryYellow}"
-                             Foreground="Black"
-                             BorderBrush="{StaticResource PrimaryPink}"
-                             BorderThickness="3"
-                             Padding="15,0"
-                             Margin="0,0,0,27"/>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    
+                    <PasswordBox x:Name="PasswordBox"
+                 Grid.Row="0"
+                 VerticalContentAlignment="Center"
+                 Visibility="Visible"
+                 Height="55"
+                 FontSize="18"
+                 Background="{StaticResource SecondaryYellow}"
+                 Foreground="Black"
+                 BorderBrush="{StaticResource PrimaryPink}"
+                 BorderThickness="3"
+                 Padding="15,0"
+                 Margin="0,0,0,12"/>
 
-                <TextBlock Text="{Binding ErrorMessage}"
-                           Foreground="{StaticResource PrimaryPink}"
-                           Background="{StaticResource SecondaryYellow}"
-                           FontSize="14"
-                           FontWeight="Bold"
-                           HorizontalAlignment="Center"
-                           TextWrapping="Wrap"
-                           Margin="0,0,0,20"/>
+                    <TextBox x:Name="PasswordTextBox"
+             Grid.Row="0"
+             VerticalContentAlignment="Center"
+             Visibility="Collapsed"
+             Height="55"
+             FontSize="18"
+             Background="{StaticResource SecondaryYellow}"
+             Foreground="Black"
+             BorderBrush="{StaticResource PrimaryPink}"
+             BorderThickness="3"
+             Padding="15,0"
+             Margin="0,0,0,12"/>
+
+                    <Border Grid.Row="1"
+            Background="{StaticResource SecondaryYellow}"
+            BorderBrush="{StaticResource PrimaryPink}"
+            BorderThickness="2"
+            Padding="12,8"
+            HorizontalAlignment="Left">
+
+                        <CheckBox Content="Показать пароль"
+                  FontSize="14"
+                  FontWeight="SemiBold"
+                  Foreground="Black"
+                  Background="Transparent"
+                  BorderThickness="0"
+                  Cursor="Hand"
+                  Checked="ShowPassword_Checked"
+                  Unchecked="ShowPassword_Unchecked"
+                                  HorizontalAlignment="Left" 
+              VerticalAlignment="Center" Width="148"/>
+                    </Border>
+                </Grid>
+
+                <Border Background="{StaticResource SecondaryYellow}"
+        BorderBrush="{StaticResource PrimaryPink}"
+        BorderThickness="2"
+        CornerRadius="6"
+        Padding="14,10"
+        Margin="0,8,0,22"
+        MinHeight="44">
+
+                    <TextBlock Text="{Binding ErrorMessage}"
+               Foreground="{StaticResource PrimaryPink}"
+               FontSize="14"
+               FontWeight="Bold"
+               TextWrapping="Wrap"
+               TextAlignment="Center"
+               HorizontalAlignment="Center"
+               VerticalAlignment="Center"
+               MaxWidth="360"/>
+                </Border>
 
                 <UniformGrid Columns="2"
                              Rows="1">

@@ -54,6 +54,9 @@ namespace IncidentsRegistration.ViewModels
                     .Trim() ?? string.Empty;
             }
         }
+        public bool CanGroup =>
+            Role == "администратор" ||
+            Role == "диспетчер";
 
         public bool CanEdit =>
                 Role == "администратор" ||
@@ -71,7 +74,33 @@ namespace IncidentsRegistration.ViewModels
             {
                 Incidents.Clear();
 
-                var data = _incidentService.GetAll();
+                var currentUser = _userService.CurrentUser;
+
+                List<Incident> data;
+
+                if (Role == "руководитель группы")
+                {
+                    var teamId = currentUser?
+                        .SystemUserResponseTeams
+                        .FirstOrDefault()?
+                        .IdResponseTeam;
+
+                    if (!teamId.HasValue)
+                    {
+                        ErrorMessage =
+                            "Вы не привязаны к группе реагирования";
+                        return;
+                    }
+
+                    data = _incidentService.GetIncidentsByTeam(teamId.Value)
+                        .ToList();
+                }
+                else
+                {
+                    data = _incidentService
+                        .GetAll()
+                        .ToList();
+                }
 
                 foreach (var incident in data)
                 {

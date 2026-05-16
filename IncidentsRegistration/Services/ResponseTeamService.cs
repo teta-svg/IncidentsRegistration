@@ -51,6 +51,8 @@ namespace IncidentsRegistration.Services
         public List<ResponseTeam> GetAllTeams()
         {
             return _context.ResponseTeams
+                .Include(t => t.SystemUserResponseTeams)
+                .ThenInclude(link => link.IdUserNavigation)
                 .AsNoTracking()
                 .ToList();
         }

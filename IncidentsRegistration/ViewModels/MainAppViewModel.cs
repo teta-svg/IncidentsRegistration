@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using IncidentsRegistration.Interfaces;
 using IncidentsRegistration.Models;
 using IncidentsRegistration.Views;
+using System.Windows;
 
 namespace IncidentsRegistration.ViewModels
 {
@@ -13,6 +14,7 @@ namespace IncidentsRegistration.ViewModels
         private readonly IIncidentService _incidentService;
         private readonly IExportService _exportService;
         private readonly IContentNavigationService _contentNav;
+        private readonly IResponseTeamService _teamService;
         private readonly INavigationService _nav;
 
         [ObservableProperty]
@@ -24,18 +26,26 @@ namespace IncidentsRegistration.ViewModels
         [ObservableProperty]
         private string errorMessage = string.Empty;
 
+        [ObservableProperty]
+        private string teamName = string.Empty;
+
+        [ObservableProperty]
+        private string teamLeadName = string.Empty;
+
         public MainAppViewModel(
             IUserService userService,
             IAuthService authService,
             IIncidentService incidentService,
             IExportService exportService, 
             IContentNavigationService contentNav,
+            IResponseTeamService teamService,
             INavigationService nav)
         {
             _userService = userService;
             _authService = authService;
             _incidentService = incidentService;
             _exportService = exportService;
+            _teamService = teamService;
             _contentNav = contentNav;
             _nav = nav;
         }
@@ -50,6 +60,25 @@ namespace IncidentsRegistration.ViewModels
                     .GetRole(CurrentUser)?
                     .Trim()
                     .ToLower() ?? string.Empty;
+
+                if (IsLead)
+                {
+                    var team = _teamService.GetAllTeams()
+                        .FirstOrDefault(t =>
+                            t.SystemUserResponseTeams
+                                .Any(link =>
+                                    link.IdUser == CurrentUser.IdUser));
+
+                    if (team != null)
+                    {
+                        TeamName = team.NameTeam;
+
+                        TeamLeadName =
+                            $"{team.DirectorLastName} " +
+                            $"{team.DirectorFirstName} " +
+                            $"{team.DirectorPatronymic}";
+                    }
+                }
             }
             else
             {
@@ -60,7 +89,6 @@ namespace IncidentsRegistration.ViewModels
             OnPropertyChanged(nameof(IsLead));
             OnPropertyChanged(nameof(IsAdmin));
         }
-
         public bool CanSeeAllIncidents => true;
 
         public bool CanSeeOperational =>
@@ -159,6 +187,19 @@ namespace IncidentsRegistration.ViewModels
         [RelayCommand]
         private void Logout()
         {
+            ErrorMessage = string.Empty;
+
+            var result = MessageBox.Show(
+                "Вы действительно хотите выйти из системы?",
+                "Подтверждение выхода",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+
+            if (result != MessageBoxResult.Yes)
+                return;
+
+            _userService.CurrentUser = null;
+
             _nav.Navigate<LoginPage>();
         }
     }
